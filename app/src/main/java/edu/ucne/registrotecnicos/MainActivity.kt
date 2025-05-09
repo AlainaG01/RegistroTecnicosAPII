@@ -17,11 +17,14 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
@@ -83,6 +86,8 @@ class MainActivity : ComponentActivity() {
         var nombre:String by remember { mutableStateOf("") }
         var sueldo: Double by remember { mutableStateOf(0.0) }
         var errorMessage:String? by remember { mutableStateOf("") }
+        var editando by remember { mutableStateOf<TecnicoEntity?>(null) }
+        val scope = rememberCoroutineScope()
 
         Scaffold { innerPadding ->
             Column (
@@ -177,12 +182,15 @@ class MainActivity : ComponentActivity() {
                                     scope.launch {
                                         saveTecnico(
                                             TecnicoEntity(
+                                                tecnicoId = editando?.tecnicoId,
                                                 nombre = nombre,
                                                 sueldo = sueldo
                                             )
                                         )
                                         nombre = ""
                                         sueldo = 0.0
+                                        errorMessage = null
+                                        editando = null
                                     }
                                 },
                                 colors = ButtonDefaults.outlinedButtonColors(
@@ -208,41 +216,72 @@ class MainActivity : ComponentActivity() {
                         lifecycleOwner = lifecycleOwner,
                         minActiveState = Lifecycle.State.STARTED
                     )
-                TecnicoListScreen(tecnicoList)
+                //TecnicoListScreen(tecnicoList)
+                TecnicoListScreen(
+                    tecnicoList = tecnicoList,
+                    onEdit = { tecnico ->
+                        nombre = tecnico.nombre
+                        sueldo = tecnico.sueldo
+                        editando = tecnico
+                    },
+                    onDelete = { tecnico ->
+                        scope.launch {
+                            tecnicoDb.TecnicoDao().delete(tecnico)
+                        }
+                    }
+                )
             }
         }
     }
 
     @Composable
-    fun TecnicoListScreen(tecnicoList: List<TecnicoEntity>) {
-        Column(
-            modifier = Modifier.fillMaxSize()
-        ) {
-            Spacer(modifier = Modifier.height(32.dp))
-            Text("Lista de tecnicos")
+    fun TecnicoListScreen(
+        tecnicoList: List<TecnicoEntity>,
+        onEdit: (TecnicoEntity) -> Unit,
+        onDelete: (TecnicoEntity) -> Unit
+    ) {
+        Column(modifier = Modifier.fillMaxWidth()) {
+            Spacer(modifier = Modifier.height(16.dp))
+            Text(
+                text = "Lista de técnicos",
+                style = MaterialTheme.typography.headlineSmall
+            )
+            Spacer(modifier = Modifier.height(8.dp))
 
-            LazyColumn(
-                modifier = Modifier.fillMaxSize()
-            ) {
-                items(tecnicoList) {
-                    TecnicoRow(it)
+            LazyColumn(modifier = Modifier.fillMaxWidth()) {
+                items(tecnicoList) { tecnico ->
+                    TecnicoRow(tecnico, onEdit, onDelete)
                 }
             }
         }
     }
 
-    @Composable
-    private fun TecnicoRow(it: TecnicoEntity) {
+   @Composable
+    private fun TecnicoRow(
+       tecnico: TecnicoEntity,
+       onEdit: (TecnicoEntity) -> Unit,
+       onDelete: (TecnicoEntity) -> Unit
+    ) {
         Row(
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 8.dp)
         ) {
-            Text(modifier = Modifier.weight(1f), text = it.tecnicoId.toString())
+            Text(modifier = Modifier.weight(1f), text = tecnico.tecnicoId.toString())
             Text(
                 modifier = Modifier.weight(2f),
-                text = it.nombre,
+                text = tecnico.nombre,
                 style = MaterialTheme.typography.headlineLarge
             )
-            Text(modifier = Modifier.weight(2f), text = it.sueldo.toString())
+            Text(modifier = Modifier.weight(2f), text = tecnico.sueldo.toString())
+            IconButton(onClick = { onEdit(tecnico) }) {
+                Icon(Icons.Default.Edit, contentDescription = "Editar")
+            }
+
+            IconButton(onClick = { onDelete(tecnico) }) {
+                Icon(Icons.Default.Delete, contentDescription = "Eliminar")
+            }
         }
         HorizontalDivider()
     }
