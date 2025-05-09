@@ -4,6 +4,8 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -16,12 +18,14 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -95,6 +99,9 @@ class MainActivity : ComponentActivity() {
                             .fillMaxWidth()
                             .padding(8.dp)
                     ){
+                        Spacer(modifier = Modifier.height(32.dp))
+                        Text("Registro de tecnicos")
+
                         OutlinedTextField(
                             value = "0",
                             onValueChange = {},
@@ -103,21 +110,30 @@ class MainActivity : ComponentActivity() {
                             readOnly = true,
                             enabled = false
                         )
-
                         OutlinedTextField(
-                            label = { Text(text = "Nombre del tecnico") },
                             value = nombre,
-                            onValueChange = {nombre = it},
-                            modifier = Modifier.fillMaxWidth()
+                            onValueChange = { nombre = it },
+                            label = { Text("Nombre del técnico") },
+                            modifier = Modifier.fillMaxWidth(),
+                            colors = OutlinedTextFieldDefaults.colors(
+                                focusedBorderColor = Color.Blue,
+                                unfocusedBorderColor = Color.Gray,
+                                focusedLabelColor = Color.Blue
+                            )
                         )
 
                         OutlinedTextField(
-                            label = { Text(text = "Sueldo") },
                             value = sueldo.toString(),
                             onValueChange = { newValue ->
                                 sueldo = newValue.toDoubleOrNull() ?: 0.0
                             },
-                            modifier = Modifier.fillMaxWidth()
+                            label = {Text("Sueldo del tecnico")},
+                            modifier = Modifier.fillMaxWidth(),
+                            colors = OutlinedTextFieldDefaults.colors(
+                                focusedBorderColor = Color.Blue,
+                                unfocusedTextColor = Color.Gray,
+                                focusedLabelColor = Color.Blue
+                            )
                         )
 
                         Spacer(modifier = Modifier.padding(2.dp))
@@ -126,23 +142,37 @@ class MainActivity : ComponentActivity() {
                         }
                         Row (
                             modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.Center,
+                            verticalAlignment = Alignment.CenterVertically
                         ){
                             OutlinedButton(
                                 onClick = {
 
-                                }
+                                },
+                                colors = ButtonDefaults.outlinedButtonColors(
+                                    contentColor = Color.Blue
+                                ),
+                                border = BorderStroke(1.dp, Color.Blue),
+                                modifier = Modifier.padding(horizontal = 8.dp)
                             ) {
-                                Icon(
-                                    imageVector = Icons.Default.Add,
-                                    contentDescription = "new button"
-                                )
-                                Text(text = "Nuevo")
+                                Icon(imageVector = Icons.Default.Add,
+                                    contentDescription = "new button")
+                                Text("Nuevo")
                             }
+
                             val scope = rememberCoroutineScope()
+
                             OutlinedButton(
                                 onClick = {
-                                    if(nombre.isBlank())
+                                    if(nombre.isBlank()) {
                                         errorMessage = "El nombre no puede estar vacio."
+                                        return@OutlinedButton
+                                    }
+
+                                    if(sueldo <= 0.0) {
+                                        errorMessage = "El sueldo no puede ser cero o menor."
+                                        return@OutlinedButton
+                                    }
 
                                     scope.launch {
                                         saveTecnico(
@@ -154,7 +184,12 @@ class MainActivity : ComponentActivity() {
                                         nombre = ""
                                         sueldo = 0.0
                                     }
-                                }
+                                },
+                                colors = ButtonDefaults.outlinedButtonColors(
+                                    contentColor = Color.Blue
+                                ),
+                                border = BorderStroke(1.dp, Color.Blue),
+                                modifier = Modifier.padding(horizontal = 8.dp)
                             ) {
                                 Icon(
                                     imageVector = Icons.Default.Edit,
@@ -195,6 +230,7 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
+
     @Composable
     private fun TecnicoRow(it: TecnicoEntity) {
         Row(
