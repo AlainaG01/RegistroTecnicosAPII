@@ -93,8 +93,6 @@ class MainActivity : ComponentActivity() {
             RegistroTecnicosTheme {
                 val nav = rememberNavController()
                 TecnicosNavHost(nav)
-
-
             }
         }
     }
