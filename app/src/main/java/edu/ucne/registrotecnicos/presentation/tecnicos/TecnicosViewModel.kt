@@ -15,6 +15,10 @@ class TecnicosViewModel(
         }
     }
 
+    suspend fun findTecnico(id: Int): TecnicoEntity? {
+        return tecnicosRepository.find(id)
+    }
+
     /*companion object {
         val Factory: ViewModelProvider.Factory = object : ViewModelProvider.Factory {
             @Suppress("UNCHECKED_CAST")

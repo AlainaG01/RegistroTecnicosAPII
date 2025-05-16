@@ -21,29 +21,38 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import edu.ucne.registrotecnicos.data.local.entities.TecnicoEntity
-import edu.ucne.registrotecnicos.ui.theme.RegistroTecnicosTheme
-import kotlinx.coroutines.launch
 
 @Composable
 fun TecnicoScreen(
     tecniId: Int? = null,
-    save: (TecnicoEntity) -> Unit
+    viewModel: TecnicosViewModel,
+    function: () -> Unit
 ) {
     var nombre: String by remember { mutableStateOf("") }
     var sueldo: Double by remember { mutableStateOf(0.0) }
     var errorMessage: String? by remember { mutableStateOf("") }
     var editando by remember { mutableStateOf<TecnicoEntity?>(null) }
+
+    LaunchedEffect(tecniId) {
+        if (tecniId != null && tecniId > 0) {
+            val tecnico = viewModel.findTecnico(tecniId)
+            tecnico?.let {
+                editando = it
+                nombre = it.nombre
+                sueldo = it.sueldo
+            }
+        }
+    }
 
     Scaffold { innerPadding ->
         Column(
@@ -64,7 +73,7 @@ fun TecnicoScreen(
                     Text("Registro de tecnicos $tecniId")
 
                     OutlinedTextField(
-                        value = "0",
+                        value = editando?.tecnicoId?.toString() ?: "0",
                         onValueChange = {},
                         label = { Text("ID Técnico") },
                         modifier = Modifier.fillMaxWidth(),
@@ -133,8 +142,8 @@ fun TecnicoScreen(
                                     errorMessage = "El sueldo no puede ser cero o menor."
                                     return@OutlinedButton
                                 }
-
-                                save(
+                                //crear
+                                viewModel.saveTecnico(
                                     TecnicoEntity(
                                         tecnicoId = editando?.tecnicoId,
                                         nombre = nombre,
@@ -166,12 +175,12 @@ fun TecnicoScreen(
     }
 }
 
-@Preview(showBackground = true)
+/*@Preview(showBackground = true)
 @Composable
 private fun TecnicoPreview() {
     RegistroTecnicosTheme {
-        TecnicoScreen {
+        TecnicoScreen() {
 
         }
     }
-}
+}*/
