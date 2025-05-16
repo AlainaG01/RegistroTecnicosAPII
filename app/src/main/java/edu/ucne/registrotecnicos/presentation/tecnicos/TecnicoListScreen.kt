@@ -1,5 +1,6 @@
 package edu.ucne.registrotecnicos.presentation.tecnicos
 
+import android.graphics.drawable.Icon
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -32,7 +33,8 @@ import edu.ucne.registrotecnicos.ui.theme.RegistroTecnicosTheme
 @Composable
 fun TecnicoListScreen(
     tecnicoList: List<TecnicoEntity>,
-    onEdit: (Int?) -> Unit
+    onEdit: (Int?) -> Unit,
+    onDelete: (TecnicoEntity) -> Unit
 ) {
     Scaffold(
         topBar = {
@@ -53,7 +55,7 @@ fun TecnicoListScreen(
         ) {
             LazyColumn(modifier = Modifier.fillMaxWidth()) {
                 items(tecnicoList) { tecnico ->
-                    TecnicoRow(tecnico, { onEdit(tecnico.tecnicoId) })
+                    TecnicoRow(tecnico, { onEdit(tecnico.tecnicoId) }, { onDelete(tecnico) })
                 }
             }
         }
@@ -64,6 +66,7 @@ fun TecnicoListScreen(
 private fun TecnicoRow(
     tecnico: TecnicoEntity,
     onEdit: () -> Unit,
+    onDelete: () -> Unit
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -81,7 +84,9 @@ private fun TecnicoRow(
         IconButton(onClick = onEdit) {
             Icon(Icons.Default.Edit, contentDescription = "Editar")
         }
-
+        IconButton(onClick = onDelete) {
+            Icon(Icons.Default.Delete, contentDescription = "Eliminar")
+        }
 
     }
     HorizontalDivider()
@@ -106,6 +111,7 @@ private fun Preview() {
         TecnicoListScreen(
             tecnicoList = tecnicos,
             onEdit = {},
+            onDelete = {}
         )
     }
 }

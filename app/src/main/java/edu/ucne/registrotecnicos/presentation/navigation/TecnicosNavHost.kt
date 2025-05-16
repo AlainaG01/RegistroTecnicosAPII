@@ -26,6 +26,9 @@ fun TecnicosNavHost(
                 onEdit = { tecnicoId ->
                     navHostController.navigate(Screen.Tecnico(tecnicoId))
                 },
+                onDelete = { tecnico ->
+                    viewModel.deleteTecnico(tecnico)
+                }
             )
         }
 

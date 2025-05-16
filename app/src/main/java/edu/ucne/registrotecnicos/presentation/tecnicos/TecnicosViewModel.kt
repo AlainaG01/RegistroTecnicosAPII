@@ -19,6 +19,11 @@ class TecnicosViewModel(
         return tecnicosRepository.find(id)
     }
 
+    fun deleteTecnico(tecnico: TecnicoEntity) {
+        viewModelScope.launch {
+            tecnicosRepository.delete(tecnico)
+        }
+    }
     /*companion object {
         val Factory: ViewModelProvider.Factory = object : ViewModelProvider.Factory {
             @Suppress("UNCHECKED_CAST")
