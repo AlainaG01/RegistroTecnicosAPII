@@ -95,7 +95,8 @@ class MainActivity : ComponentActivity() {
                 TecnicosNavHost(
                     nav,
                     tecnicoList,
-                    tecnicosViewModel
+                    tecnicosViewModel,
+                    nav
                     )
             }
         }

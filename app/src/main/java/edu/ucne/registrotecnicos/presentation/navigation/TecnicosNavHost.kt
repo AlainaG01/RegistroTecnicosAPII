@@ -1,6 +1,7 @@
 package edu.ucne.registrotecnicos.presentation.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -14,7 +15,8 @@ import edu.ucne.registrotecnicos.presentation.tecnicos.TecnicosViewModel
 fun TecnicosNavHost(
     navHostController: NavHostController,
     tecnicoList: List<TecnicoEntity>,
-    viewModel: TecnicosViewModel
+    viewModel: TecnicosViewModel,
+    navController: NavController
 ) {
     NavHost(
         navController = navHostController,
@@ -36,7 +38,8 @@ fun TecnicosNavHost(
             val tecnicoId  = backStack.toRoute<Screen.Tecnico>().tecnicoId
             TecnicoScreen(
                 tecnicoId,
-                viewModel
+                viewModel,
+                navController
             ) {
             }
         }

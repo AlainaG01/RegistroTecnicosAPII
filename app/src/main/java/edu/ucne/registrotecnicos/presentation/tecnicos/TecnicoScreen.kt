@@ -11,10 +11,13 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
@@ -29,13 +32,20 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import edu.ucne.registrotecnicos.data.local.entities.TecnicoEntity
+import edu.ucne.registrotecnicos.data.repository.TecnicosRepository
+import edu.ucne.registrotecnicos.ui.theme.RegistroTecnicosTheme
 
 @Composable
 fun TecnicoScreen(
-    tecniId: Int? = null,
+    tecnicoId: Int? = null,
     viewModel: TecnicosViewModel,
+    navController: NavController,
     function: () -> Unit
 ) {
     var nombre: String by remember { mutableStateOf("") }
@@ -43,9 +53,9 @@ fun TecnicoScreen(
     var errorMessage: String? by remember { mutableStateOf("") }
     var editando by remember { mutableStateOf<TecnicoEntity?>(null) }
 
-    LaunchedEffect(tecniId) {
-        if (tecniId != null && tecniId > 0) {
-            val tecnico = viewModel.findTecnico(tecniId)
+    LaunchedEffect(tecnicoId) {
+        if (tecnicoId != null && tecnicoId > 0) {
+            val tecnico = viewModel.findTecnico(tecnicoId)
             tecnico?.let {
                 editando = it
                 nombre = it.nombre
@@ -61,6 +71,19 @@ fun TecnicoScreen(
                 .padding(innerPadding)
                 .padding(8.dp)
         ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                if (navController != null){
+                    IconButton(
+                        onClick = { navController.popBackStack() },
+                        modifier = Modifier.align(Alignment.CenterVertically)
+                    ) {
+                        Icon(Icons.Default.ArrowBack, contentDescription = "volver")
+                    }
+                }
+            }
             ElevatedCard(
                 modifier = Modifier.fillMaxWidth()
             ) {
@@ -70,7 +93,7 @@ fun TecnicoScreen(
                         .padding(8.dp)
                 ) {
                     Spacer(modifier = Modifier.height(32.dp))
-                    Text("Registro de tecnicos $tecniId")
+                    Text("Registro de tecnicos $tecnicoId")
 
                     OutlinedTextField(
                         value = editando?.tecnicoId?.toString() ?: "0",
@@ -155,6 +178,7 @@ fun TecnicoScreen(
                                 errorMessage = null
                                 editando = null
 
+                                navController.navigateUp()
                             },
                             colors = ButtonDefaults.outlinedButtonColors(
                                 contentColor = Color.Blue
@@ -178,9 +202,16 @@ fun TecnicoScreen(
 /*@Preview(showBackground = true)
 @Composable
 private fun TecnicoPreview() {
+    val navController = rememberNavController()
+    val viewModel = TecnicosViewModel(
+        tecnicosRepository = TODO()
+    )
     RegistroTecnicosTheme {
-        TecnicoScreen() {
-
-        }
+        TecnicoScreen(
+            tecnicoId = null,
+            viewModel = viewModel,
+            navController = navController
+        ) {}
     }
-}*/
+}
+*/
