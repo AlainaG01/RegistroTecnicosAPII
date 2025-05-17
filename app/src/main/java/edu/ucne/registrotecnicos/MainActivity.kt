@@ -20,9 +20,6 @@ import edu.ucne.registrotecnicos.data.repository.PrioridadesRepository
 import edu.ucne.registrotecnicos.data.repository.TecnicosRepository
 import edu.ucne.registrotecnicos.data.repository.TicketsRepository
 import edu.ucne.registrotecnicos.presentation.navigation.HomeNavHost
-import edu.ucne.registrotecnicos.presentation.navigation.PrioridadesNavHost
-import edu.ucne.registrotecnicos.presentation.navigation.TecnicosNavHost
-import edu.ucne.registrotecnicos.presentation.navigation.TicketsNavHost
 import edu.ucne.registrotecnicos.presentation.prioridades.PrioridadesViewModel
 import edu.ucne.registrotecnicos.presentation.tecnicos.TecnicosViewModel
 import edu.ucne.registrotecnicos.presentation.tickets.TicketsViewModel
