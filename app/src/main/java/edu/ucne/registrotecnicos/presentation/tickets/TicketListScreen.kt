@@ -22,8 +22,12 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import edu.ucne.registrotecnicos.data.local.entities.TicketEntity
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -70,24 +74,30 @@ private fun TicketRow(
             .fillMaxWidth()
             .padding(vertical = 8.dp)
     ) {
-        Text(modifier = Modifier.weight(1f), text = ticket.ticketId.toString())
+        Text(modifier = Modifier.weight(1f), text = ticket.ticketId.toString(), color = Color.Black)
         Text(
             modifier = Modifier.weight(2f),
-            text = ticket.fecha.toString(),
-            style = MaterialTheme.typography.titleMedium
+            text = ticket.fecha.toFormattedString(),
+            style = MaterialTheme.typography.titleMedium,
+            color = Color.Black
         )
-        Text(modifier = Modifier.weight(2f), text = ticket.descripcion)
+
+        Text(modifier = Modifier.weight(2f), text = ticket.descripcion, color = Color.Black)
+
         IconButton(onClick = onEdit) {
-            Icon(Icons.Default.Edit, contentDescription = "Editar")
+            Icon(Icons.Default.Edit, contentDescription = "Editar", tint = MaterialTheme.colorScheme.primary)
         }
         IconButton(onClick = onDelete) {
-            Icon(Icons.Default.Delete, contentDescription = "Eliminar")
+            Icon(Icons.Default.Delete, contentDescription = "Eliminar", tint = MaterialTheme.colorScheme.error)
         }
 
     }
     HorizontalDivider()
 }
-
+fun Date.toFormattedString(): String {
+    val format = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault())
+    return format.format(this)
+}
 /*@Preview
 @Composable
 private fun Preview() {
