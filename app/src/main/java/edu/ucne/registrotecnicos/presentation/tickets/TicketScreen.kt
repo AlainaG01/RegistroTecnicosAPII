@@ -47,7 +47,11 @@ import edu.ucne.registrotecnicos.data.local.entities.PrioridadEntity
 import edu.ucne.registrotecnicos.data.local.entities.TicketEntity
 import edu.ucne.registrotecnicos.presentation.prioridades.PrioridadesViewModel
 import java.util.Date
+//
+import androidx.compose.material3.*
 
+
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TicketScreen(
     ticketId: Int? = null,
@@ -63,10 +67,6 @@ fun TicketScreen(
     var tecnicoId: Int by remember { mutableStateOf(0) }
     var errorMessage: String? by remember { mutableStateOf("") }
     var editando by remember { mutableStateOf<TicketEntity?>(null) }
-
-    // Estados para los dropdowns
-    var expandedPrioridad by remember { mutableStateOf(false) }
-    var expandedTecnico by remember { mutableStateOf(false) }
 
     val prioridades by viewModel.ListaPrioridades.collectAsState()
     val tecnicos by viewModel.ListaTecnicos.collectAsState()
@@ -130,62 +130,26 @@ fun TicketScreen(
                     //prioridad
                     Spacer(modifier = Modifier.height(8.dp))
 
-                    // Selector de Prioridad
-                   /* Box(modifier = Modifier.fillMaxWidth()) {
+                    var expandedPrioridad by remember { mutableStateOf(false) }
+
+                    ExposedDropdownMenuBox(
+                        expanded = expandedPrioridad,
+                        onExpandedChange = { expandedPrioridad = !expandedPrioridad }
+                    ) {
                         OutlinedTextField(
-                            value = prioridades.find { it.prioridadId == prioridadId }?.descripcion ?: "Seleccione técnico",
+                            value = prioridades.find { it.prioridadId == prioridadId }?.descripcion ?: "",
                             onValueChange = {},
-                            label = { Text("Prioridad") },
-                            modifier = Modifier.fillMaxWidth(),
-                            //readOnly = true,
-                            trailingIcon = {
-                                Icon(Icons.Default.ArrowDropDown, contentDescription = null)
-                            },
-                            colors = OutlinedTextFieldDefaults.colors(
-                                focusedBorderColor = Color.Blue,
-                                unfocusedTextColor = Color.Gray,
-                                focusedLabelColor = Color.Blue
-                            )
-                        )
-                        DropdownMenu(
-                            expanded = expandedPrioridad,
-                            onDismissRequest = { expandedPrioridad = false },
-                            modifier = Modifier.fillMaxWidth()
-                        ) {
-                            prioridades.forEach { prioridad ->
-                                DropdownMenuItem(
-                                    text = { Text(prioridad.descripcion) },
-                                    onClick = {
-                                        prioridadId = prioridad.prioridadId ?: 0
-                                        expandedPrioridad = false
-                                    }
-                                )
-                            }
-                        }
-                    }*/
-                    //prueba
-                    Box(modifier = Modifier.fillMaxWidth()) {
-                        OutlinedTextField(
-                            value = prioridades.find { it.prioridadId == prioridadId }?.descripcion ?: "Seleccione una prioridad",
-                            onValueChange = {},
-                            label = { Text("Prioridad") },
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .clickable { expandedPrioridad = true }, // <- Habilitar el dropdown
                             readOnly = true,
-                            trailingIcon = {
-                                Icon(Icons.Default.ArrowDropDown, contentDescription = null)
-                            },
-                            colors = OutlinedTextFieldDefaults.colors(
-                                focusedBorderColor = Color.Blue,
-                                unfocusedTextColor = Color.Gray,
-                                focusedLabelColor = Color.Blue
-                            )
+                            label = { Text("Prioridad") },
+                            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandedPrioridad) },
+                            modifier = Modifier
+                                .menuAnchor()
+                                .fillMaxWidth()
                         )
-                        DropdownMenu(
+
+                        ExposedDropdownMenu(
                             expanded = expandedPrioridad,
-                            onDismissRequest = { expandedPrioridad = false },
-                            modifier = Modifier.fillMaxWidth()
+                            onDismissRequest = { expandedPrioridad = false }
                         ) {
                             prioridades.forEach { prioridad ->
                                 DropdownMenuItem(
@@ -239,63 +203,26 @@ fun TicketScreen(
                     //tecnico
                     Spacer(modifier = Modifier.height(8.dp))
 
-                   /* Box(modifier = Modifier.fillMaxWidth()) {
+                    var expandedTecnico by remember { mutableStateOf(false) }
+
+                    ExposedDropdownMenuBox(
+                        expanded = expandedTecnico,
+                        onExpandedChange = { expandedTecnico = !expandedTecnico }
+                    ) {
                         OutlinedTextField(
-                            value = tecnicos.find { it.tecnicoId == tecnicoId }?.nombre ?: "Seleccione técnico",
+                            value = tecnicos.find { it.tecnicoId == tecnicoId }?.nombre ?: "",
                             onValueChange = {},
+                            readOnly = true,
                             label = { Text("Técnico Asignado") },
-                            modifier = Modifier.fillMaxWidth(),
-                            //readOnly = true,
-                            trailingIcon = {
-                                Icon(Icons.Default.ArrowDropDown, contentDescription = null)
-                            },
-                            colors = OutlinedTextFieldDefaults.colors(
-                                focusedBorderColor = Color.Blue,
-                                unfocusedTextColor = Color.Gray,
-                                focusedLabelColor = Color.Blue
-                            )
+                            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandedTecnico) },
+                            modifier = Modifier
+                                .menuAnchor()
+                                .fillMaxWidth()
                         )
-                        DropdownMenu(
+
+                        ExposedDropdownMenu(
                             expanded = expandedTecnico,
                             onDismissRequest = { expandedTecnico = false }
-                        ) {
-                            tecnicos.forEach { tecnico ->
-                                DropdownMenuItem(
-                                    text = {
-                                        Text(tecnico.nombre)
-                                    },
-                                    onClick = {
-                                        tecnicoId = tecnico.tecnicoId ?: 0
-                                        expandedTecnico = false
-                                    }
-                                )
-                            }
-                        }
-                    }*/
-
-                    //prueba
-                    Box(modifier = Modifier.fillMaxWidth()) {
-                        OutlinedTextField(
-                            value = tecnicos.find { it.tecnicoId == tecnicoId }?.nombre ?: "Seleccione un técnico",
-                            onValueChange = {},
-                            label = { Text("Técnico Asignado") },
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .clickable { expandedTecnico = true }, // <- Habilitar el dropdown
-                            readOnly = true,
-                            trailingIcon = {
-                                Icon(Icons.Default.ArrowDropDown, contentDescription = null)
-                            },
-                            colors = OutlinedTextFieldDefaults.colors(
-                                focusedBorderColor = Color.Blue,
-                                unfocusedTextColor = Color.Gray,
-                                focusedLabelColor = Color.Blue
-                            )
-                        )
-                        DropdownMenu(
-                            expanded = expandedTecnico,
-                            onDismissRequest = { expandedTecnico = false },
-                            modifier = Modifier.fillMaxWidth()
                         ) {
                             tecnicos.forEach { tecnico ->
                                 DropdownMenuItem(
@@ -308,6 +235,7 @@ fun TicketScreen(
                             }
                         }
                     }
+
 
 
                     Spacer(modifier = Modifier.padding(2.dp))
