@@ -1,8 +1,8 @@
 package edu.ucne.registrotecnicos.presentation.tecnicos
 
-import android.graphics.drawable.Icon
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -11,7 +11,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -19,32 +18,81 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import edu.ucne.registrotecnicos.data.local.entities.TecnicoEntity
-import edu.ucne.registrotecnicos.ui.theme.RegistroTecnicosTheme
 
-
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TecnicoListScreen(
-    tecnicoList: List<TecnicoEntity>,
-    onEdit: (Int?) -> Unit,
-    onDelete: (TecnicoEntity) -> Unit
+    viewModel: TecnicosViewModel = hiltViewModel(),
+    goToTecnico: (Int) -> Unit,
+    createTecnico: () -> Unit,
+    deleteTecnico: () -> Unit
 ) {
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    TecnicoListBodyScreen(
+        uiState,
+        goToTecnico,
+        createTecnico,
+        deleteTecnico
+    )
+}
+
+@Composable
+private fun TecnicoRow(
+    it: TecnicoEntity,
+    goToTecnico: (Int) -> Unit,
+    createTecnico: () -> Unit,
+    deleteTecnico: () -> Unit
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp)
+    ) {
+        Text(modifier = Modifier.weight(1f), text = it.tecnicoId.toString(), color = Color.Black)
+        Text(
+            modifier = Modifier.weight(2f),
+            text = it.nombre,
+            style = MaterialTheme.typography.titleMedium,
+            color = Color.Black
+        )
+        Text(modifier = Modifier.weight(2f), text = it.sueldo.toString(), color = Color.Black)
+        IconButton(onClick = createTecnico) {
+            Icon(Icons.Default.Edit, contentDescription = "Editar", tint = MaterialTheme.colorScheme.primary)
+        }
+        IconButton(onClick = deleteTecnico) {
+            Icon(Icons.Default.Delete, contentDescription = "Eliminar", tint = MaterialTheme.colorScheme.error)
+        }
+
+    }
+    HorizontalDivider()
+}
+
+@Composable
+fun TecnicoListBodyScreen(
+    uiState: TecnicoUiState,
+    goToTecnico: (Int) -> Unit,
+    createTecnico: () -> Unit,
+    deleteTecnico: () -> Unit
+){
     Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("Lista de técnicos") })
-        },
+        modifier = Modifier.fillMaxSize(),
         floatingActionButton = {
-            FloatingActionButton(onClick = { onEdit(0) }) {
-                Icon(Icons.Filled.Add, "Agregar nueva")
+            FloatingActionButton(
+                onClick = createTecnico
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Add,
+                    contentDescription = "Create a new Ticket"
+                )
             }
         }
     ) { padding ->
@@ -55,46 +103,20 @@ fun TecnicoListScreen(
                 .padding(padding)
         ) {
             LazyColumn(modifier = Modifier.fillMaxWidth()) {
-                items(tecnicoList) { tecnico ->
-                    TecnicoRow(tecnico, { onEdit(tecnico.tecnicoId) }, { onDelete(tecnico) })
+                items(uiState.tecnicos) {
+                    TecnicoRow(
+                        it,
+                        goToTecnico,
+                        createTecnico,
+                        deleteTecnico
+                    )
                 }
             }
         }
     }
 }
 
-@Composable
-private fun TecnicoRow(
-    tecnico: TecnicoEntity,
-    onEdit: () -> Unit,
-    onDelete: () -> Unit
-) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 8.dp)
-    ) {
-        Text(modifier = Modifier.weight(1f), text = tecnico.tecnicoId.toString(), color = Color.Black)
-        Text(
-            modifier = Modifier.weight(2f),
-            text = tecnico.nombre,
-            style = MaterialTheme.typography.titleMedium,
-            color = Color.Black
-        )
-        Text(modifier = Modifier.weight(2f), text = tecnico.sueldo.toString(), color = Color.Black)
-        IconButton(onClick = onEdit) {
-            Icon(Icons.Default.Edit, contentDescription = "Editar", tint = MaterialTheme.colorScheme.primary)
-        }
-        IconButton(onClick = onDelete) {
-            Icon(Icons.Default.Delete, contentDescription = "Eliminar", tint = MaterialTheme.colorScheme.error)
-        }
-
-    }
-    HorizontalDivider()
-}
-
-@Preview
+/*@Preview
 @Composable
 private fun Preview() {
     val tecnicos = listOf(
@@ -117,3 +139,4 @@ private fun Preview() {
         )
     }
 }
+*/

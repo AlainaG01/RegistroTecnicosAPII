@@ -16,6 +16,7 @@ import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ElevatedCard
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedButton
@@ -34,36 +35,37 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import edu.ucne.registrotecnicos.data.local.entities.TecnicoEntity
 import edu.ucne.registrotecnicos.data.repository.TecnicosRepository
+import edu.ucne.registrotecnicos.presentation.tickets.TicketEvent
 import edu.ucne.registrotecnicos.ui.theme.RegistroTecnicosTheme
 
 @Composable
 fun TecnicoScreen(
-    tecnicoId: Int? = null,
-    viewModel: TecnicosViewModel,
-    navController: NavController,
-    function: () -> Unit
+    tecnicoId: Int,
+    viewModel: TecnicosViewModel = hiltViewModel(),
+    goBack: () -> Unit
 ) {
-    var nombre: String by remember { mutableStateOf("") }
-    var sueldo: Double by remember { mutableStateOf(0.0) }
-    var errorMessage: String? by remember { mutableStateOf("") }
-    var editando by remember { mutableStateOf<TecnicoEntity?>(null) }
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    TecnicoBodyScreen(
+        uiState = uiState,
+        viewModel::onEvent,
+        goBack = goBack
+    )
+}
 
-    LaunchedEffect(tecnicoId) {
-        if (tecnicoId != null && tecnicoId > 0) {
-            val tecnico = viewModel.findTecnico(tecnicoId)
-            tecnico?.let {
-                editando = it
-                nombre = it.nombre
-                sueldo = it.sueldo
-            }
-        }
-    }
-
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun TecnicoBodyScreen(
+    uiState: TecnicoUiState,
+    onEvent: (TecnicoEvent) -> Unit,
+    goBack: () -> Unit
+){
     Scaffold { innerPadding ->
         Column(
             modifier = Modifier
@@ -75,13 +77,11 @@ fun TecnicoScreen(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                if (navController != null){
-                    IconButton(
-                        onClick = { navController.popBackStack() },
-                        modifier = Modifier.align(Alignment.CenterVertically)
-                    ) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "volver")
-                    }
+                IconButton(
+                    onClick = goBack,
+                    modifier = Modifier.align(Alignment.CenterVertically)
+                ) {
+                    Icon(Icons.Default.ArrowBack, contentDescription = "volver")
                 }
             }
             ElevatedCard(
@@ -93,19 +93,18 @@ fun TecnicoScreen(
                         .padding(8.dp)
                 ) {
                     Spacer(modifier = Modifier.height(32.dp))
-                    Text("Registro de tecnicos $tecnicoId")
+                    Text("Registro de tecnicos ")
 
+//                    OutlinedTextField(
+//                        value = uiState.tecnicoId ?: "0",
+//                        onValueChange = {},
+//                        modifier = Modifier.fillMaxWidth(),
+//                        readOnly = true,
+//                        enabled = false
+//                    )
                     OutlinedTextField(
-                        value = editando?.tecnicoId?.toString() ?: "0",
-                        onValueChange = {},
-                        label = { Text("ID Técnico") },
-                        modifier = Modifier.fillMaxWidth(),
-                        readOnly = true,
-                        enabled = false
-                    )
-                    OutlinedTextField(
-                        value = nombre,
-                        onValueChange = { nombre = it },
+                        value = uiState.nombre ?: "",
+                        onValueChange = { onEvent(TecnicoEvent.NombreChange(it))},
                         label = { Text("Nombre del técnico") },
                         modifier = Modifier.fillMaxWidth(),
                         colors = OutlinedTextFieldDefaults.colors(
@@ -116,10 +115,8 @@ fun TecnicoScreen(
                     )
 
                     OutlinedTextField(
-                        value = sueldo.toString(),
-                        onValueChange = { newValue ->
-                            sueldo = newValue.toDoubleOrNull() ?: 0.0
-                        },
+                        value = uiState.sueldo.toString() ?: "",
+                        onValueChange = { onEvent(TecnicoEvent.SueldoChange(it.toDouble()))},
                         label = { Text("Sueldo del tecnico") },
                         modifier = Modifier.fillMaxWidth(),
                         colors = OutlinedTextFieldDefaults.colors(
@@ -130,7 +127,7 @@ fun TecnicoScreen(
                     )
 
                     Spacer(modifier = Modifier.padding(2.dp))
-                    errorMessage?.let {
+                    uiState.errorMessage?.let {
                         Text(text = it, color = Color.Red)
                     }
                     Row(
@@ -140,7 +137,7 @@ fun TecnicoScreen(
                     ) {
                         OutlinedButton(
                             onClick = {
-
+                                onEvent(TecnicoEvent.New)
                             },
                             colors = ButtonDefaults.outlinedButtonColors(
                                 contentColor = Color.Blue
@@ -156,29 +153,9 @@ fun TecnicoScreen(
                         }
                         OutlinedButton(
                             onClick = {
-                                if (nombre.isBlank()) {
-                                    errorMessage = "El nombre no puede estar vacio."
-                                    return@OutlinedButton
-                                }
 
-                                if (sueldo <= 0.0) {
-                                    errorMessage = "El sueldo no puede ser cero o menor."
-                                    return@OutlinedButton
-                                }
-                                //crear
-                                viewModel.saveTecnico(
-                                    TecnicoEntity(
-                                        tecnicoId = editando?.tecnicoId,
-                                        nombre = nombre,
-                                        sueldo = sueldo
-                                    )
-                                )
-                                nombre = ""
-                                sueldo = 0.0
-                                errorMessage = null
-                                editando = null
-
-                                navController.navigateUp()
+                                onEvent(TecnicoEvent.Save)
+                                goBack()
                             },
                             colors = ButtonDefaults.outlinedButtonColors(
                                 contentColor = Color.Blue
