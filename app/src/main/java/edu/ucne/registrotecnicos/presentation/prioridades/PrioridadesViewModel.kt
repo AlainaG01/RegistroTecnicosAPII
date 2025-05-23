@@ -26,7 +26,7 @@ data class PrioridadesViewModel @Inject constructor(
             PrioridadEvent.New -> nuevo()
             is PrioridadEvent.PrioridadChange -> onPrioridadIdChange(event.prioridadId)
             PrioridadEvent.Save -> save()
-            is PrioridadEvent.TiempoChange -> onTiempoChange(event.tiempo)
+            is PrioridadEvent.TiempoChange -> onTiempoChange(event.tiempo.toString())
         }
     }
 
@@ -99,9 +99,9 @@ data class PrioridadesViewModel @Inject constructor(
         }
     }
 
-    private fun onTiempoChange(tiempo: Int) {
+    private fun onTiempoChange(tiempo: String) {
         _uiState.update {
-            it.copy(tiempo = tiempo)
+            it.copy(tiempo = tiempo.toInt())
         }
     }
 
