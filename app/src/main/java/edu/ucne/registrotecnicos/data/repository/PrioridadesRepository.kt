@@ -3,8 +3,9 @@ package edu.ucne.registrotecnicos.data.repository
 import edu.ucne.registrotecnicos.data.local.dao.PrioridadDao
 import edu.ucne.registrotecnicos.data.local.entities.PrioridadEntity
 import kotlinx.coroutines.flow.Flow
+import javax.inject.Inject
 
-class PrioridadesRepository(
+class PrioridadesRepository @Inject constructor(
     private val dao: PrioridadDao
 ) {
     suspend fun save(prioridad: PrioridadEntity) = dao.save(prioridad)
