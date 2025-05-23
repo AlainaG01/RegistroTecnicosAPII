@@ -33,23 +33,31 @@ fun TecnicoListScreen(
     viewModel: TecnicosViewModel = hiltViewModel(),
     goToTecnico: (Int) -> Unit,
     createTecnico: () -> Unit,
-    deleteTecnico: () -> Unit
+    deleteTecnico: ((TecnicoEntity) -> Unit)? = null
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     TecnicoListBodyScreen(
-        uiState,
-        goToTecnico,
-        createTecnico,
-        deleteTecnico
+        uiState = uiState,
+        /*goToTecnico = { id ->
+            // Primero establecemos el técnico seleccionado en el ViewModel
+            viewModel.onEvent(TecnicoEvent.TecnicoChange(id))
+            // Luego navegamos
+            goToTecnico(id)
+        },*/
+        goToTecnico = goToTecnico,
+        createTecnico = createTecnico,
+        deleteTecnico = { tecnico ->
+            viewModel.onEvent(TecnicoEvent.TecnicoChange(tecnico.tecnicoId ?: 0))
+            viewModel.onEvent(TecnicoEvent.Delete)
+        }
     )
 }
 
 @Composable
 private fun TecnicoRow(
     it: TecnicoEntity,
-    goToTecnico: (Int) -> Unit,
-    createTecnico: () -> Unit,
-    deleteTecnico: () -> Unit
+    goToTecnico: () -> Unit,
+    deleteTecnico:(TecnicoEntity) -> Unit
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -65,10 +73,10 @@ private fun TecnicoRow(
             color = Color.Black
         )
         Text(modifier = Modifier.weight(2f), text = it.sueldo.toString(), color = Color.Black)
-        IconButton(onClick = createTecnico) {
+        IconButton(onClick = goToTecnico) {
             Icon(Icons.Default.Edit, contentDescription = "Editar", tint = MaterialTheme.colorScheme.primary)
         }
-        IconButton(onClick = deleteTecnico) {
+        IconButton(onClick = {deleteTecnico(it)}) {
             Icon(Icons.Default.Delete, contentDescription = "Eliminar", tint = MaterialTheme.colorScheme.error)
         }
 
@@ -81,7 +89,7 @@ fun TecnicoListBodyScreen(
     uiState: TecnicoUiState,
     goToTecnico: (Int) -> Unit,
     createTecnico: () -> Unit,
-    deleteTecnico: () -> Unit
+    deleteTecnico: (TecnicoEntity) -> Unit
 ){
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -103,12 +111,11 @@ fun TecnicoListBodyScreen(
                 .padding(padding)
         ) {
             LazyColumn(modifier = Modifier.fillMaxWidth()) {
-                items(uiState.tecnicos) {
+                items(uiState.tecnicos) { tecnico ->
                     TecnicoRow(
-                        it,
-                        goToTecnico,
-                        createTecnico,
-                        deleteTecnico
+                        it = tecnico,
+                        goToTecnico = { goToTecnico(tecnico.tecnicoId ?: 0) },
+                        deleteTecnico = deleteTecnico
                     )
                 }
             }

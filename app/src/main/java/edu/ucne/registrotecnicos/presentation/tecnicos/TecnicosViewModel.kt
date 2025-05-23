@@ -2,6 +2,7 @@ package edu.ucne.registrotecnicos.presentation.tecnicos
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
 import edu.ucne.registrotecnicos.data.local.entities.TecnicoEntity
 import edu.ucne.registrotecnicos.data.repository.TecnicosRepository
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -10,12 +11,13 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-
+@HiltViewModel
 class TecnicosViewModel @Inject constructor(
     private val tecnicosRepository: TecnicosRepository
 ): ViewModel() {
     private val _uiState = MutableStateFlow(TecnicoUiState())
     val uiState = _uiState.asStateFlow()
+
 
     fun onEvent(event: TecnicoEvent){
         when (event) {
@@ -23,10 +25,11 @@ class TecnicosViewModel @Inject constructor(
             TecnicoEvent.New -> nuevo()
             is TecnicoEvent.NombreChange -> onNombreChange(event.nombre)
             TecnicoEvent.Save -> save()
-            is TecnicoEvent.SueldoChange -> onSueldoChange(event.sueldo.toString())
+            is TecnicoEvent.SueldoChange -> onSueldoChange(event.sueldo)
             is TecnicoEvent.TecnicoChange -> onTecnicoIdChange(event.tecnicoId)
         }
     }
+
 
     init {
         getTecnico()
@@ -35,7 +38,7 @@ class TecnicosViewModel @Inject constructor(
     //saveTecnico
      private fun save() {
         viewModelScope.launch {
-            if (_uiState.value.nombre.isNullOrBlank() && _uiState.value.sueldo > 0.0){
+            if (_uiState.value.nombre.isNullOrBlank() || _uiState.value.sueldo < 0.0){
                 _uiState.update {
                     it.copy(errorMessage = "Campo vacios")
                 }
@@ -96,9 +99,9 @@ class TecnicosViewModel @Inject constructor(
         }
     }
 
-    private fun onSueldoChange(sueldo: String) {
+    private fun onSueldoChange(sueldo: Double) {
         _uiState.update {
-            it.copy(sueldo = sueldo.toDouble())
+            it.copy(sueldo = sueldo)
         }
     }
 

@@ -47,11 +47,21 @@ import edu.ucne.registrotecnicos.ui.theme.RegistroTecnicosTheme
 
 @Composable
 fun TecnicoScreen(
-    tecnicoId: Int,
+    tecnicoId: Int?,
     viewModel: TecnicosViewModel = hiltViewModel(),
     goBack: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
+    LaunchedEffect(tecnicoId) {
+        println("id $tecnicoId")
+        tecnicoId?.let {
+            if (it > 0){
+                viewModel.selectedTecnico(it)
+            }
+        }
+    }
+
     TecnicoBodyScreen(
         uiState = uiState,
         viewModel::onEvent,
@@ -95,13 +105,15 @@ fun TecnicoBodyScreen(
                     Spacer(modifier = Modifier.height(32.dp))
                     Text("Registro de tecnicos ")
 
-//                    OutlinedTextField(
-//                        value = uiState.tecnicoId ?: "0",
-//                        onValueChange = {},
-//                        modifier = Modifier.fillMaxWidth(),
-//                        readOnly = true,
-//                        enabled = false
-//                    )
+
+                    OutlinedTextField(
+                        value = uiState.tecnicoId?.toString() ?: "Nuevo",
+                        onValueChange = {},
+                        modifier = Modifier.fillMaxWidth(),
+                        readOnly = true,
+                        enabled = false
+                    )
+
                     OutlinedTextField(
                         value = uiState.nombre ?: "",
                         onValueChange = { onEvent(TecnicoEvent.NombreChange(it))},
@@ -115,7 +127,7 @@ fun TecnicoBodyScreen(
                     )
 
                     OutlinedTextField(
-                        value = uiState.sueldo.toString() ?: "",
+                        value = uiState.sueldo.toString(),
                         onValueChange = { onEvent(TecnicoEvent.SueldoChange(it.toDouble()))},
                         label = { Text("Sueldo del tecnico") },
                         modifier = Modifier.fillMaxWidth(),
@@ -153,7 +165,6 @@ fun TecnicoBodyScreen(
                         }
                         OutlinedButton(
                             onClick = {
-
                                 onEvent(TecnicoEvent.Save)
                                 goBack()
                             },
