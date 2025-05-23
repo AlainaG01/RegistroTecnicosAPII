@@ -36,15 +36,13 @@ fun HomeNavHost(
 
         //pantalla lista de prioridades
         composable <Screen.PrioridadList> {
-            val prioridades by prioridadesViewModel.prioridades.collectAsState()
 
             PrioridadListScreen(
-                prioridadList = prioridades,
-                onEdit = { id ->
+                goToPrioridad = { id ->
                     navHostController.navigate(Screen.Prioridad(id ?: 0))
                 },
-                onDelete = { prioridad ->
-                    prioridadesViewModel.deletePrioridad(prioridad)
+                createPrioridad = {
+                    navHostController.navigate(Screen.Prioridad(0))
                 }
             )
 
@@ -55,23 +53,20 @@ fun HomeNavHost(
             val prioridadId = backStack.toRoute<Screen.Prioridad>().prioridadId
             PrioridadScreen(
                 prioridadId = prioridadId,
-                viewModelPrioridad = prioridadesViewModel,
-                navController = navHostController,
-                function = { navHostController.popBackStack()}
+                //viewModel = prioridadesViewModel,
+                goBack = { navHostController.popBackStack() }
             )
         }
 
         //pantalla lista de tecnicos
         composable<Screen.TecnicoList>{
-            val tecnicos by tecnicosViewModel.tecnicos.collectAsState()
 
             TecnicoListScreen(
-                tecnicoList = tecnicos,
-                onEdit = { id ->
+                goToTecnico = { id ->
                     navHostController.navigate(Screen.Tecnico(id ?: 0))
                 },
-                onDelete = { tecnico ->
-                    tecnicosViewModel.deleteTecnico(tecnico)
+                createTecnico = {
+                    navHostController.navigate((Screen.Tecnico(0)))
                 }
             )
         }
@@ -81,23 +76,20 @@ fun HomeNavHost(
             val tecnicoId = backStack.toRoute<Screen.Tecnico>().tecnicoId
             TecnicoScreen(
                 tecnicoId = tecnicoId,
-                viewModel = tecnicosViewModel,
-                navController = navHostController,
-                function = {navHostController.popBackStack()}
+                //viewModel = tecnicosViewModel,
+                goBack = { navHostController.popBackStack() }
             )
         }
 
         //pantalla lista de tickets
         composable <Screen.TicketList>{
-            val tickets by ticketsViewModel.ticketsS.collectAsState()
 
             TicketListScreen(
-                ticketList = tickets,
-                onEdit = { id ->
+                goToTicket = { id ->
                     navHostController.navigate(Screen.Ticket(id ?: 0))
                 },
-                onDelete = {ticket ->
-                    ticketsViewModel.deleteTicket(ticket)
+                createTicket = {
+                    navHostController.navigate((Screen.Ticket(0)))
                 }
             )
         }
@@ -107,9 +99,8 @@ fun HomeNavHost(
             val ticketId = backStack.toRoute<Screen.Ticket>().ticketId
             TicketScreen(
                 ticketId = ticketId,
-                viewModel = ticketsViewModel,
-                navController = navHostController,
-                function = { navHostController.popBackStack()}
+                //viewModel = ticketsViewModel,
+                goBack = { navHostController.popBackStack()}
             )
         }
     }
