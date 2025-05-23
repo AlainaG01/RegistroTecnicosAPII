@@ -11,10 +11,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ElevatedCard
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedButton
@@ -27,37 +29,39 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import edu.ucne.registrotecnicos.data.local.entities.PrioridadEntity
 
 
 @Composable
 fun PrioridadScreen(
-    prioridadId: Int? = null,
-    viewModelPrioridad: PrioridadesViewModel,
-    navController: NavController,
-    function: () -> Unit
+    prioridadId: Int,
+    viewModel: PrioridadesViewModel = hiltViewModel(),
+    goBack: () -> Unit
 ){
-    var descripcion: String by remember { mutableStateOf("") }
-    var tiempo: Int by remember { mutableStateOf(0) }
-    var errorMessage: String? by remember { mutableStateOf("") }
-    var editando by remember { mutableStateOf<PrioridadEntity?>(null) }
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    PrioridadBodyScreen(
+        uiState = uiState,
+        viewModel::onEvent,
+        goBack = goBack
+    )
+}
 
-    LaunchedEffect(prioridadId) {
-        if (prioridadId != null && prioridadId > 0){
-            val prioridad = viewModelPrioridad.findPrioridad(prioridadId)
-            prioridad?.let {
-                editando = it
-                descripcion = it.descripcion
-                tiempo = it.tiempo
-            }
-        }
-    }
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun PrioridadBodyScreen(
+    uiState: PrioridadUiState,
+    onEvent: (PrioridadEvent) -> Unit,
+    goBack: () -> Unit
+){
     Scaffold { innerPadding ->
         Column (
             modifier = Modifier
@@ -69,13 +73,11 @@ fun PrioridadScreen(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
             ){
-                if (navController != null){
-                    IconButton(
-                        onClick = {navController.popBackStack()},
-                        modifier = Modifier.align(Alignment.CenterVertically)
-                    ) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "volver")
-                    }
+                IconButton(
+                    onClick = goBack,
+                    modifier = Modifier.align(Alignment.CenterVertically)
+                ) {
+                    Icon(Icons.Default.ArrowBack, contentDescription = "volver")
                 }
             }
             ElevatedCard (
@@ -87,19 +89,11 @@ fun PrioridadScreen(
                         .padding(8.dp)
                 ){
                     Spacer(modifier = Modifier.height(32.dp))
-                    Text("Registro de prioridades $prioridadId")
+                    Text("Registro de prioridades")
 
                     OutlinedTextField(
-                        value = editando?.prioridadId?.toString() ?: "0",
-                        onValueChange = {},
-                        label = {Text("ID Prioridad")},
-                        modifier = Modifier.fillMaxWidth(),
-                        readOnly = true,
-                        enabled = false
-                    )
-                    OutlinedTextField(
-                        value = descripcion,
-                        onValueChange = {descripcion = it},
+                        value = uiState.descripcion ?: "",
+                        onValueChange = { onEvent(PrioridadEvent.DescripcionChange(it))},
                         label = {Text("Descripcion de la prioridad")},
                         modifier = Modifier.fillMaxWidth(),
                         colors = OutlinedTextFieldDefaults.colors(
@@ -109,10 +103,8 @@ fun PrioridadScreen(
                         )
                     )
                     OutlinedTextField(
-                        value = tiempo.toString(),
-                        onValueChange = {newValue ->
-                            tiempo = newValue.toIntOrNull() ?: 0
-                        },
+                        value = uiState.tiempo.toString(),
+                        onValueChange = {onEvent(PrioridadEvent.TiempoChange(it.toInt()))},
                         label = {Text("Tiempo de la prioridad")},
                         modifier = Modifier.fillMaxWidth(),
                         colors = OutlinedTextFieldDefaults.colors(
@@ -123,7 +115,7 @@ fun PrioridadScreen(
                     )
 
                     Spacer(modifier = Modifier.padding(2.dp))
-                    errorMessage?.let {
+                    uiState.errorMessage?.let {
                         Text(text = it, color = Color.Red)
                     }
                     Row (
@@ -133,28 +125,25 @@ fun PrioridadScreen(
                     ){
                         OutlinedButton(
                             onClick = {
-                                if (descripcion.isBlank()){
-                                    errorMessage = "La descripcion no puede estar vacia."
-                                    return@OutlinedButton
-                                }
-                                if (tiempo <= 0){
-                                    errorMessage = "Debe asignar un tiempo a la prioridad."
-                                    return@OutlinedButton
-                                }
-
-                                viewModelPrioridad.savePrioridad(
-                                    PrioridadEntity(
-                                        prioridadId = editando?.prioridadId,
-                                        descripcion = descripcion,
-                                        tiempo = tiempo
-                                    )
-                                )
-                                descripcion = ""
-                                tiempo = 0
-                                errorMessage = null
-                                editando = null
-
-                                navController.navigateUp()
+                                onEvent(PrioridadEvent.New)
+                            },
+                            colors = ButtonDefaults.outlinedButtonColors(
+                                contentColor = Color.Blue
+                            ),
+                            border = BorderStroke(1.dp, Color.Blue),
+                            modifier = Modifier.padding(horizontal = 8.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Add,
+                                contentDescription = "new button"
+                            )
+                            Text(text = "Nuevo")
+                        }
+                        val scope = rememberCoroutineScope()
+                        OutlinedButton(
+                            onClick = {
+                                onEvent(PrioridadEvent.Save)
+                                goBack()
                             },
                             colors = ButtonDefaults.outlinedButtonColors(
                                 contentColor = Color.Blue
