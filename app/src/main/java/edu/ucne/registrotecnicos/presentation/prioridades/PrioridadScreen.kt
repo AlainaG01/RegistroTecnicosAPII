@@ -43,11 +43,20 @@ import edu.ucne.registrotecnicos.data.local.entities.PrioridadEntity
 
 @Composable
 fun PrioridadScreen(
-    prioridadId: Int,
+    prioridadId: Int?,
     viewModel: PrioridadesViewModel = hiltViewModel(),
     goBack: () -> Unit
 ){
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
+    LaunchedEffect(prioridadId) {
+        prioridadId?.let {
+            if (it > 0){
+                viewModel.selectedPrioridad(it)
+            }
+        }
+    }
+
     PrioridadBodyScreen(
         uiState = uiState,
         viewModel::onEvent,

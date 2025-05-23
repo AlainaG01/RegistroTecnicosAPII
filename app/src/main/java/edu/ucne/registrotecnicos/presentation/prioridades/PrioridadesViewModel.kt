@@ -2,6 +2,7 @@ package edu.ucne.registrotecnicos.presentation.prioridades
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
 import edu.ucne.registrotecnicos.data.local.entities.PrioridadEntity
 import edu.ucne.registrotecnicos.data.repository.PrioridadesRepository
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -13,6 +14,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+@HiltViewModel
 data class PrioridadesViewModel @Inject constructor(
     private val prioridadesRepository: PrioridadesRepository
 ): ViewModel() {
