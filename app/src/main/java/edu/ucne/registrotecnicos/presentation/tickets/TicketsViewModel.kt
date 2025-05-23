@@ -2,6 +2,7 @@ package edu.ucne.registrotecnicos.presentation.tickets
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
 import edu.ucne.registrotecnicos.data.local.entities.TecnicoEntity
 import edu.ucne.registrotecnicos.data.local.entities.TicketEntity
 import edu.ucne.registrotecnicos.data.repository.PrioridadesRepository
@@ -22,6 +23,7 @@ import java.util.Date
 import javax.inject.Inject
 import kotlin.Int
 
+@HiltViewModel
 class TicketsViewModel @Inject constructor(
     private val ticketsRepository: TicketsRepository,
     private val tecnicoRepository: TecnicosRepository,

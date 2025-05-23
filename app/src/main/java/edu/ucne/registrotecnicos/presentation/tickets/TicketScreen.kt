@@ -56,10 +56,19 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 @Composable
 fun TicketScreen(
     viewModel: TicketsViewModel = hiltViewModel(),
-    ticketId: Int,
+    ticketId: Int?,
     goBack: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
+    LaunchedEffect(ticketId) {
+        ticketId?.let {
+            if (it > 0){
+                viewModel.findTicket(it)
+            }
+        }
+    }
+
     TicketBodyScreen(
         uiState = uiState,
         viewModel::onEvent,

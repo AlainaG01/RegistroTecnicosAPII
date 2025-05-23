@@ -39,14 +39,17 @@ fun TicketListScreen(
     viewModel: TicketsViewModel = hiltViewModel(),
     goToTicket: (Int) -> Unit,
     createTicket: () -> Unit,
-    deleteTicket: () -> Unit
+    deleteTicket: ((TicketEntity) -> Unit)? = null
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     TicketListBodyScreen(
-        uiState,
-        goToTicket,
-        createTicket,
-        deleteTicket
+        uiState = uiState,
+        goToTicket = goToTicket,
+        createTicket = createTicket,
+        deleteTicket = { ticket ->
+            viewModel.onEvent(TicketEvent.TicketChange(ticket.ticketId ?: 0))
+            viewModel.onEvent(TicketEvent.Delete)
+        }
     )
 }
 
@@ -55,7 +58,7 @@ private fun TicketRow(
     it: TicketEntity,
     goToTicket: (Int) -> Unit,
     createTicket: () -> Unit,
-    deleteTicket: () -> Unit
+    deleteTicket: (TicketEntity) -> Unit
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -76,7 +79,7 @@ private fun TicketRow(
         IconButton(onClick = createTicket) {
             Icon(Icons.Default.Edit, contentDescription = "Editar", tint = MaterialTheme.colorScheme.primary)
         }
-        IconButton(onClick = deleteTicket) {
+        IconButton(onClick = {deleteTicket(it)}) {
             Icon(Icons.Default.Delete, contentDescription = "Eliminar", tint = MaterialTheme.colorScheme.error)
         }
 
@@ -93,7 +96,7 @@ fun TicketListBodyScreen(
     uiState: TicketUiState,
     goToTicket: (Int) -> Unit,
     createTicket: () -> Unit,
-    deleteTicket: () -> Unit
+    deleteTicket: (TicketEntity) -> Unit
 ){
     Scaffold(
         floatingActionButton = {
@@ -111,12 +114,12 @@ fun TicketListBodyScreen(
             Spacer(modifier = Modifier.height(32.dp))
             Text("Lista de tickets")
             LazyColumn(modifier = Modifier.fillMaxWidth()) {
-                items(uiState.tickets) {
+                items(uiState.tickets) { ticket ->
                     TicketRow(
-                        it,
-                        goToTicket,
-                        createTicket,
-                        deleteTicket
+                        it = ticket,
+                        goToTicket = goToTicket,
+                        createTicket = { goToTicket(ticket.ticketId ?: 0) },
+                        deleteTicket = deleteTicket
                     )
                 }
             }
