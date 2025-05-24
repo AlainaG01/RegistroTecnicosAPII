@@ -12,6 +12,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.MailOutline
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
@@ -38,13 +39,16 @@ import java.util.Locale
 fun TicketListScreen(
     viewModel: TicketsViewModel = hiltViewModel(),
     goToTicket: (Int) -> Unit,
+    goToMensaje: (Int) -> Unit,
     createTicket: () -> Unit,
-    deleteTicket: ((TicketEntity) -> Unit)? = null
+    deleteTicket: ((TicketEntity) -> Unit)? = null,
+
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     TicketListBodyScreen(
         uiState = uiState,
         goToTicket = goToTicket,
+        goToMensaje = goToMensaje,
         createTicket = createTicket,
         deleteTicket = { ticket ->
             viewModel.onEvent(TicketEvent.TicketChange(ticket.ticketId ?: 0))
@@ -57,6 +61,7 @@ fun TicketListScreen(
 private fun TicketRow(
     it: TicketEntity,
     goToTicket: (Int) -> Unit,
+    goToMensaje: (Int) -> Unit,
     createTicket: () -> Unit,
     deleteTicket: (TicketEntity) -> Unit
 ) {
@@ -75,6 +80,15 @@ private fun TicketRow(
         )
 
         Text(modifier = Modifier.weight(2f), text = it.descripcion, color = Color.Black)
+
+        // Botón para ir al chat
+        IconButton(onClick = { goToMensaje(it.ticketId ?: 0) }) {
+            Icon(
+                imageVector = Icons.Default.MailOutline,
+                contentDescription = "Chat",
+                tint = MaterialTheme.colorScheme.primary
+            )
+        }
 
         IconButton(onClick = createTicket) {
             Icon(Icons.Default.Edit, contentDescription = "Editar", tint = MaterialTheme.colorScheme.primary)
@@ -95,6 +109,7 @@ fun Date.toFormattedString(): String {
 fun TicketListBodyScreen(
     uiState: TicketUiState,
     goToTicket: (Int) -> Unit,
+    goToMensaje: (Int) -> Unit,
     createTicket: () -> Unit,
     deleteTicket: (TicketEntity) -> Unit
 ){
@@ -118,6 +133,7 @@ fun TicketListBodyScreen(
                     TicketRow(
                         it = ticket,
                         goToTicket = goToTicket,
+                        goToMensaje = goToMensaje,
                         createTicket = { goToTicket(ticket.ticketId ?: 0) },
                         deleteTicket = deleteTicket
                     )
