@@ -1,8 +1,6 @@
 package edu.ucne.registrotecnicos.presentation.navigation
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -11,20 +9,14 @@ import edu.ucne.registrotecnicos.presentation.Home.HomeScreen
 import edu.ucne.registrotecnicos.presentation.mensajes.MensajeScreen
 import edu.ucne.registrotecnicos.presentation.prioridades.PrioridadListScreen
 import edu.ucne.registrotecnicos.presentation.prioridades.PrioridadScreen
-import edu.ucne.registrotecnicos.presentation.prioridades.PrioridadesViewModel
 import edu.ucne.registrotecnicos.presentation.tecnicos.TecnicoListScreen
 import edu.ucne.registrotecnicos.presentation.tecnicos.TecnicoScreen
-import edu.ucne.registrotecnicos.presentation.tecnicos.TecnicosViewModel
 import edu.ucne.registrotecnicos.presentation.tickets.TicketListScreen
 import edu.ucne.registrotecnicos.presentation.tickets.TicketScreen
-import edu.ucne.registrotecnicos.presentation.tickets.TicketsViewModel
 
 @Composable
 fun HomeNavHost(
-    navHostController: NavHostController,
-    prioridadesViewModel: PrioridadesViewModel,
-    tecnicosViewModel: TecnicosViewModel,
-    ticketsViewModel: TicketsViewModel
+    navHostController: NavHostController
 ){
     NavHost(
         navController = navHostController,
