@@ -11,6 +11,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -18,6 +19,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -78,6 +80,7 @@ private fun PrioridadRow(
     HorizontalDivider()
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PrioridadListBodyScreen(
     uiState: PrioridadUiState,
@@ -87,10 +90,10 @@ fun PrioridadListBodyScreen(
 ){
     Scaffold(
         modifier = Modifier.fillMaxSize(),
-//        topBar = {
-//            TopAppBar(
-//                title = { Text("Lista de Prioridades") })
-//        },
+        topBar = {
+            TopAppBar(
+              title = { Text("Lista de Prioridades") })
+       },
         floatingActionButton = {
             FloatingActionButton(onClick = createPrioridad) {
                 Icon(Icons.Filled.Add, "Agregar nueva")
