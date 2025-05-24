@@ -35,6 +35,7 @@ class MensajesViewModel @Inject constructor(
             is MensajeEvent.RemitenteChange -> onRemitenteChange(event.remitente)
             MensajeEvent.Save -> enviarMensaje()
             is MensajeEvent.TickectIdChange -> onTicketIdChange(event.tickectId)
+            is MensajeEvent.TipoRemitenteChange -> onTipoRemitenteChange(event.tipoRemitente)
         }
     }
 
@@ -113,6 +114,12 @@ class MensajesViewModel @Inject constructor(
         }
     }
 
+    private fun onTipoRemitenteChange(tipoRemitente: String){
+        _uiState.update {
+            it.copy(tipoRemitente = tipoRemitente)
+        }
+    }
+
     private fun onTicketIdChange(ticketId: Int) {
         _uiState.update {
             it.copy(ticketId = ticketId)
@@ -126,5 +133,6 @@ fun MensajeUiState.toEntity() = MensajeEntity(
     fecha = fecha ?: Date(),
     contenido = contenido ?: "",
     remitente = remitente ?: "",
+    tipoRemitente = tipoRemitente ?: "",
     ticketId = ticketId ?: 0
 )

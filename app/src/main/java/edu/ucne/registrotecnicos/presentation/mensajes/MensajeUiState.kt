@@ -8,6 +8,7 @@ data class MensajeUiState(
     val fecha: Date = Date(),
     val contenido: String? = null,
     val remitente: String? = null,
+    val tipoRemitente: String? = null,
     val ticketId: Int? = 0,
     val errorMessage: String? = null,
     val mensajes: List<MensajeEntity> = emptyList()

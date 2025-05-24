@@ -33,7 +33,7 @@ class Converters {
         TicketEntity::class,
         MensajeEntity::class
     ],
-    version = 3,
+    version = 4,
     exportSchema = false
 )
 @TypeConverters(Converters::class)

@@ -96,7 +96,9 @@ fun MensajeBodyScreen(
                 state = listState
             ) {
                 items(uiState.mensajes) { mensaje ->
-                    MensajeRow(mensaje = mensaje)
+                    MensajeRow(
+                        mensaje = mensaje
+                        )
                 }
             }
 
@@ -115,7 +117,7 @@ fun MensajeBodyScreen(
                     selected = selectedRemitente == "Operator",
                     onClick = {
                         selectedRemitente = "Operator"
-                        onEvent(MensajeEvent.RemitenteChange("Operator"))
+                        onEvent(MensajeEvent.TipoRemitenteChange("Operator"))
                     }
                 )
                 Text("Operator", modifier = Modifier.padding(end = 16.dp))
@@ -124,7 +126,7 @@ fun MensajeBodyScreen(
                     selected = selectedRemitente == "Owner",
                     onClick = {
                         selectedRemitente = "Owner"
-                        onEvent(MensajeEvent.RemitenteChange("Owner"))
+                        onEvent(MensajeEvent.TipoRemitenteChange("Owner"))
                     }
                 )
                 Text("Owner")
@@ -164,8 +166,10 @@ fun MensajeBodyScreen(
 }
 
 @Composable
-fun MensajeRow(mensaje: MensajeEntity) {
-    val isOperator = mensaje.remitente == "Operator"
+fun MensajeRow(
+    mensaje: MensajeEntity
+    ) {
+    val isOperator = mensaje.tipoRemitente == "Operator"
 
     Column(
         modifier = Modifier
@@ -178,7 +182,7 @@ fun MensajeRow(mensaje: MensajeEntity) {
             .padding(12.dp)
     ) {
         Text(
-            text = "By ${mensaje.remitente} on ${SimpleDateFormat("dd/MM/yyyy (HH:mm)", Locale.getDefault()).format(mensaje.fecha)}",
+            text = "By ${mensaje.remitente} on ${SimpleDateFormat("dd/MM/yyyy (HH:mm)", Locale.getDefault()).format(mensaje.fecha)}   ${mensaje.tipoRemitente}",
             style = MaterialTheme.typography.labelSmall,
             color = Color.Gray
         )
