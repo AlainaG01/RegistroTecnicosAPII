@@ -49,6 +49,7 @@ import edu.ucne.registrotecnicos.presentation.prioridades.PrioridadesViewModel
 import java.util.Date
 //
 import androidx.compose.material3.*
+import androidx.compose.ui.text.style.TextAlign
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
@@ -83,6 +84,8 @@ fun TicketBodyScreen(
     onEvent: (TicketEvent) -> Unit,
     goBack: () -> Unit
 ){
+    var expandedPrioridad by remember { mutableStateOf(false) }
+    var expandedTecnico by remember { mutableStateOf(false) }
     Scaffold { innerPadding ->
         Column(
             modifier = Modifier
@@ -112,50 +115,51 @@ fun TicketBodyScreen(
                     Spacer(modifier = Modifier.height(32.dp))
                     Text("Registro de tickets")
 
-//                    OutlinedTextField(
-//                        value = editando?.ticketId?.toString() ?: "0",
-//                        onValueChange = {},
-//                        label = { Text("ID Ticket") },
-//                        modifier = Modifier.fillMaxWidth(),
-//                        readOnly = true,
-//                        enabled = false
-//                    )
+                    OutlinedTextField(
+                        value = uiState.ticketId?.toString() ?: "Nuevo",
+                        onValueChange = {},
+                        label = { Text("ID Ticket") },
+                        modifier = Modifier.fillMaxWidth(),
+                        readOnly = true,
+                        enabled = false
+                    )
 
                     //prioridad
                     Spacer(modifier = Modifier.height(8.dp))
 
-//                    var expandedPrioridad by remember { mutableStateOf(false) }
-//
-//                    ExposedDropdownMenuBox(
-//                        expanded = expandedPrioridad,
-//                        onExpandedChange = { expandedPrioridad = !expandedPrioridad }
-//                    ) {
-//                        OutlinedTextField(
-//                            value = prioridades.find { it.prioridadId == prioridadId }?.descripcion ?: "",
-//                            onValueChange = {},
-//                            readOnly = true,
-//                            label = { Text("Prioridad") },
-//                            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandedPrioridad) },
-//                            modifier = Modifier
-//                                .menuAnchor()
-//                                .fillMaxWidth()
-//                        )
-//
-//                        ExposedDropdownMenu(
-//                            expanded = expandedPrioridad,
-//                            onDismissRequest = { expandedPrioridad = false }
-//                        ) {
-//                            prioridades.forEach { prioridad ->
-//                                DropdownMenuItem(
-//                                    text = { Text(prioridad.descripcion) },
-//                                    onClick = {
-//                                        prioridadId = prioridad.prioridadId!!
-//                                        expandedPrioridad = false
-//                                    }
-//                                )
-//                            }
-//                        }
-//                    }
+                    Box(modifier = Modifier.fillMaxWidth()) {
+                        OutlinedButton(
+                            onClick = { expandedPrioridad = true },
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Text(
+                                uiState.prioridades.find { it.prioridadId == uiState.prioridadId }?.descripcion
+                                    ?: "Seleccione prioridad",
+                                modifier = Modifier.weight(1f),
+                                textAlign = TextAlign.Start
+                            )
+                            Icon(Icons.Default.ArrowDropDown, contentDescription = "Prioridad")
+                        }
+                        DropdownMenu(
+                            expanded = expandedPrioridad,
+                            onDismissRequest = { expandedPrioridad = false },
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            uiState.prioridades.forEach { prioridad ->
+                                DropdownMenuItem(
+                                    text = { Text(prioridad.descripcion) },
+                                    onClick = {
+                                        onEvent(
+                                            TicketEvent.PrioridadChange(
+                                                prioridad.prioridadId ?: 0
+                                            )
+                                        )
+                                        expandedPrioridad = false
+                                    }
+                                )
+                            }
+                        }
+                    }
 
 
                     OutlinedTextField(
@@ -171,7 +175,7 @@ fun TicketBodyScreen(
                     )
 
                     OutlinedTextField(
-                        value = uiState.asunto,
+                        value = uiState.asunto ?: "",
                         onValueChange = { onEvent(TicketEvent.AsuntoChange(it)) },
                         label = { Text("Asunto") },
                         modifier = Modifier.fillMaxWidth(),
@@ -183,7 +187,7 @@ fun TicketBodyScreen(
                     )
 
                     OutlinedTextField(
-                        value = uiState.descripcion,
+                        value = uiState.descripcion ?: "",
                         onValueChange = { onEvent(TicketEvent.DescripcionChange(it)) },
                         label = { Text("Descripcion") },
                         modifier = Modifier.fillMaxWidth(),
@@ -195,40 +199,36 @@ fun TicketBodyScreen(
                     )
 
                     //tecnico
-//                    Spacer(modifier = Modifier.height(8.dp))
-//
-//                    var expandedTecnico by remember { mutableStateOf(false) }
-//
-//                    ExposedDropdownMenuBox(
-//                        expanded = expandedTecnico,
-//                        onExpandedChange = { expandedTecnico = !expandedTecnico }
-//                    ) {
-//                        OutlinedTextField(
-//                            value = tecnicos.find { it.tecnicoId == tecnicoId }?.nombre ?: "",
-//                            onValueChange = {},
-//                            readOnly = true,
-//                            label = { Text("Técnico Asignado") },
-//                            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandedTecnico) },
-//                            modifier = Modifier
-//                                .menuAnchor()
-//                                .fillMaxWidth()
-//                        )
-//
-//                        ExposedDropdownMenu(
-//                            expanded = expandedTecnico,
-//                            onDismissRequest = { expandedTecnico = false }
-//                        ) {
-//                            tecnicos.forEach { tecnico ->
-//                                DropdownMenuItem(
-//                                    text = { Text(tecnico.nombre) },
-//                                    onClick = {
-//                                        tecnicoId = tecnico.tecnicoId!!
-//                                        expandedTecnico = false
-//                                    }
-//                                )
-//                            }
-//                        }
-//                    }
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Box(modifier = Modifier.fillMaxWidth()) {
+                        OutlinedButton(
+                            onClick = { expandedTecnico = true },
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Text(
+                                uiState.tecnicos.find { it.tecnicoId == uiState.tecnicoId }?.nombre
+                                    ?: "Seleccione técnico",
+                                modifier = Modifier.weight(1f),
+                                textAlign = TextAlign.Start
+                            )
+                            Icon(Icons.Default.ArrowDropDown, contentDescription = "Técnico")
+                        }
+                        DropdownMenu(
+                            expanded = expandedTecnico,
+                            onDismissRequest = { expandedTecnico = false },
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            uiState.tecnicos.forEach { tecnico ->
+                                DropdownMenuItem(
+                                    text = { Text(tecnico.nombre) },
+                                    onClick = {
+                                        onEvent(TicketEvent.TecnicoChange(tecnico.tecnicoId ?: 0))
+                                        expandedTecnico = false
+                                    }
+                                )
+                            }
+                        }
+                    }
 
                     Spacer(modifier = Modifier.padding(2.dp))
                     uiState.errorMessage?.let {
