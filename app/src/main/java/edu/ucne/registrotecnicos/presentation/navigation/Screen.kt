@@ -17,4 +17,6 @@ sealed class Screen {
     data class Ticket(val ticketId: Int?) : Screen()
     @Serializable
     data object Home : Screen()
+    @Serializable
+    data class Mensaje(val ticketId: Int?) : Screen()
 }
