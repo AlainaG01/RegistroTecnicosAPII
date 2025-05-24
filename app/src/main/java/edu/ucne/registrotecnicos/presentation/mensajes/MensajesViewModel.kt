@@ -1,19 +1,16 @@
 package edu.ucne.registrotecnicos.presentation.mensajes
 
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import edu.ucne.registrotecnicos.data.local.entities.MensajeEntity
 import edu.ucne.registrotecnicos.data.repository.MensajesRepository
-import edu.ucne.registrotecnicos.presentation.tickets.toEntity
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.util.Date
 import javax.inject.Inject
-import kotlin.Int
 
 @HiltViewModel
 class MensajesViewModel @Inject constructor(
@@ -38,10 +35,6 @@ class MensajesViewModel @Inject constructor(
             is MensajeEvent.TipoRemitenteChange -> onTipoRemitenteChange(event.tipoRemitente)
         }
     }
-
-//    init {
-//        cargarMensajes(_uiState.value.ticketId ?: 0)
-//    }
 
     //getAll
     fun cargarMensajes(ticketId: Int) {

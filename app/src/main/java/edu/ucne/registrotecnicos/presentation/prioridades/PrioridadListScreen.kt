@@ -25,14 +25,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import edu.ucne.registrotecnicos.data.local.entities.PrioridadEntity
-import edu.ucne.registrotecnicos.data.local.entities.TecnicoEntity
-import edu.ucne.registrotecnicos.presentation.tecnicos.TecnicoEvent
-import edu.ucne.registrotecnicos.ui.theme.RegistroTecnicosTheme
 
 @Composable
 fun PrioridadListScreen(
@@ -84,6 +80,7 @@ private fun PrioridadRow(
     HorizontalDivider()
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PrioridadListBodyScreen(
     uiState: PrioridadUiState,
@@ -93,10 +90,10 @@ fun PrioridadListBodyScreen(
 ){
     Scaffold(
         modifier = Modifier.fillMaxSize(),
-//        topBar = {
-//            TopAppBar(
-//                title = { Text("Lista de Prioridades") })
-//        },
+        topBar = {
+            TopAppBar(
+              title = { Text("Lista de Prioridades") })
+       },
         floatingActionButton = {
             FloatingActionButton(onClick = createPrioridad) {
                 Icon(Icons.Filled.Add, "Agregar nueva")
