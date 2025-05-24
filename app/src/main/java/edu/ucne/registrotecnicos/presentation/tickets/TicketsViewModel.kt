@@ -3,25 +3,18 @@ package edu.ucne.registrotecnicos.presentation.tickets
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import edu.ucne.registrotecnicos.data.local.entities.TecnicoEntity
 import edu.ucne.registrotecnicos.data.local.entities.TicketEntity
 import edu.ucne.registrotecnicos.data.repository.PrioridadesRepository
 import edu.ucne.registrotecnicos.data.repository.TecnicosRepository
 import edu.ucne.registrotecnicos.data.repository.TicketsRepository
-import edu.ucne.registrotecnicos.presentation.tecnicos.TecnicoEvent
-import edu.ucne.registrotecnicos.presentation.tecnicos.toEntity
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.util.Date
 import javax.inject.Inject
-import kotlin.Int
 
 @HiltViewModel
 class TicketsViewModel @Inject constructor(
@@ -37,22 +30,40 @@ class TicketsViewModel @Inject constructor(
     val uiState = _uiState.asStateFlow()
 
     fun onEvent(event: TicketEvent) {
-        when(event){
-            is TicketEvent.AsuntoChange -> TicketEvent.AsuntoChange(event.asunto)
-            is TicketEvent.ClienteChange -> TicketEvent.ClienteChange(event.cliente)
+        when (event) {
+            is TicketEvent.AsuntoChange -> onAsuntoChange(event.asunto)
+            is TicketEvent.ClienteChange -> onClienteChange(event.cliente)
             TicketEvent.Delete -> deleteTicket()
-            is TicketEvent.DescripcionChange -> TicketEvent.DescripcionChange(event.descripcion)
-            is TicketEvent.FechaChange -> TicketEvent.FechaChange(event.fecha)
+            is TicketEvent.DescripcionChange -> onDescripcionChange(event.descripcion)
+            is TicketEvent.FechaChange -> onFechaChange(event.fecha)
             TicketEvent.New -> nuevo()
-            is TicketEvent.PrioridadChange -> TicketEvent.PrioridadChange(event.prioridadId)
+            is TicketEvent.PrioridadChange -> onPrioridadIdChange(event.prioridadId)
             TicketEvent.Save -> saveTicket()
-            is TicketEvent.TecnicoChange -> TicketEvent.TecnicoChange(event.tecnicoId)
-            is TicketEvent.TicketChange -> TicketEvent.TicketChange(event.ticketId)
+            is TicketEvent.TecnicoChange -> onTecnicoIdChange(event.tecnicoId)
+            is TicketEvent.TicketChange -> onTicketIdChange(event.ticketId)
         }
     }
 
+
+    // Estado para las prioridades
+    val prioridades = prioridadesRepository.getAll()
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = emptyList()
+        )
+
+    // Para Técnicos
+    val tecnicos = tecnicoRepository.getAll().stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = emptyList()
+    )
+
     init {
         getTicket()
+        getTecnico()
+        getPrioridad()
     }
 
     //saveTecnico
@@ -164,61 +175,25 @@ class TicketsViewModel @Inject constructor(
         }
     }
 
-    //cosas a eliminar
-
-
-    //prioridad
-   /*
-   private val ticketList = MutableStateFlow<List<TicketEntity>>(emptyList())
-    val tickets: StateFlow<List<TicketEntity>> = ticketList.asStateFlow()
-    val ListaPrioridades = prioridadesRepository.getAll()
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000),
-            initialValue = emptyList()
-        )
-
-    //tecnico
-    val ListaTecnicos = tecnicoRepository.getAll()
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000),
-            initialValue = emptyList()
-        )
-
-    init {
-        getAllTickets()
-    }
-
-    fun getAllTickets() {
-        ticketsRepository.getAll()
-            .onEach { tickets ->
-                ticketList.value = tickets
+    private fun getPrioridad() {
+        viewModelScope.launch {
+            prioridadesRepository.getAll().collect { prioridades ->
+                _uiState.update {
+                    it.copy(prioridades = prioridades)
+                }
             }
-            .launchIn(viewModelScope)
-    }
-
-    fun saveTicket(ticket: TicketEntity) {
-        viewModelScope.launch {
-            ticketsRepository.save(ticket)
         }
     }
 
-    suspend fun findTicket(id: Int): TicketEntity? {
-        return ticketsRepository.find(id)
-    }
-
-    fun deleteTicket(ticket: TicketEntity) {
+    private fun getTecnico() {
         viewModelScope.launch {
-            ticketsRepository.delete(ticket)
+            tecnicoRepository.getAll().collect { tecnicos ->
+                _uiState.update {
+                    it.copy(tecnicos = tecnicos)
+                }
+            }
         }
     }
-    val ticketsS: StateFlow<List<TicketEntity>> = ticketsRepository.getAll()
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000),
-            initialValue = emptyList()
-        )*/
 }
 
 fun TicketUiState.toEntity() = TicketEntity(
