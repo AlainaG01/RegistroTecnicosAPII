@@ -1,5 +1,6 @@
 package edu.ucne.registrotecnicos.presentation.tickets
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -29,6 +30,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import edu.ucne.registrotecnicos.data.local.entities.TicketEntity
+import java.nio.file.WatchEvent
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -69,33 +71,71 @@ private fun TicketRow(
             .fillMaxWidth()
             .padding(vertical = 8.dp)
     ) {
-        Text(modifier = Modifier.weight(1f), text = it.ticketId.toString(), color = Color.Black)
-        Text(
-            modifier = Modifier.weight(2f),
-            text = it.fecha.toFormattedString(),
-            style = MaterialTheme.typography.titleMedium,
-            color = Color.Black
-        )
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 8.dp, vertical = 4.dp)
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
+            ) {
+                Text(
+                    modifier = Modifier.weight(1f),
+                    text = "Ticket ${it.ticketId}",
+                    color = Color.Black
+                )
+                Text(
+                    modifier = Modifier.weight(1f),
+                    text = "${SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(it.fecha)}",
+                    color = Color.Black
+                )
+            }
 
-        Text(modifier = Modifier.weight(2f), text = it.descripcion, color = Color.Black)
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Column(
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Text(text = "Cliente: ${it.cliente}",
+                        color = Color.Black,
+                        style = MaterialTheme.typography.titleMedium,
+                        )
+                    Text(text = "Asunto: ${it.asunto}", color = Color.Black)
 
-        // Botón para ir al chat
-        IconButton(onClick = { goToMensaje(it.ticketId ?: 0) }) {
-            Icon(
-                imageVector = Icons.Default.MailOutline,
-                contentDescription = "Chat",
-                tint = MaterialTheme.colorScheme.primary
-            )
+                    Row (
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.End
+                    ){
+                        IconButton(onClick = { goToMensaje(it.ticketId ?: 0) }) {
+                            Icon(
+                                imageVector = Icons.Default.MailOutline,
+                                contentDescription = "Chat",
+                                tint = MaterialTheme.colorScheme.primary
+                            )
+                        }
+
+                        IconButton(onClick = createTicket) {
+                            Icon(Icons.Default.Edit, contentDescription = "Editar", tint = MaterialTheme.colorScheme.primary)
+                        }
+
+                        IconButton(onClick = { deleteTicket(it) }) {
+                            Icon(Icons.Default.Delete, contentDescription = "Eliminar", tint = MaterialTheme.colorScheme.error)
+                        }
+                    }
+                }
+
+
+            }
         }
-
-        IconButton(onClick = createTicket) {
-            Icon(Icons.Default.Edit, contentDescription = "Editar", tint = MaterialTheme.colorScheme.primary)
-        }
-        IconButton(onClick = {deleteTicket(it)}) {
-            Icon(Icons.Default.Delete, contentDescription = "Eliminar", tint = MaterialTheme.colorScheme.error)
-        }
-
     }
+
     HorizontalDivider()
 }
 fun Date.toFormattedString(): String {
