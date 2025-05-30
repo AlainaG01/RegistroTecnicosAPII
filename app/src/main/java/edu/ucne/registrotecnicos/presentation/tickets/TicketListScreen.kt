@@ -11,6 +11,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.MailOutline
@@ -42,7 +43,7 @@ fun TicketListScreen(
     goToMensaje: (Int) -> Unit,
     createTicket: () -> Unit,
     deleteTicket: ((TicketEntity) -> Unit)? = null,
-
+    goBack: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     TicketListBodyScreen(
@@ -53,7 +54,8 @@ fun TicketListScreen(
         deleteTicket = { ticket ->
             viewModel.onEvent(TicketEvent.TicketChange(ticket.ticketId ?: 0))
             viewModel.onEvent(TicketEvent.Delete)
-        }
+        },
+        goBack = goBack
     )
 }
 
@@ -138,10 +140,10 @@ private fun TicketRow(
 
     HorizontalDivider()
 }
-fun Date.toFormattedString(): String {
-    val format = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault())
-    return format.format(this)
-}
+//fun Date.toFormattedString(): String {
+//    val format = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault())
+//    return format.format(this)
+//}
 
 @Composable
 fun TicketListBodyScreen(
@@ -149,7 +151,8 @@ fun TicketListBodyScreen(
     goToTicket: (Int) -> Unit,
     goToMensaje: (Int) -> Unit,
     createTicket: () -> Unit,
-    deleteTicket: (TicketEntity) -> Unit
+    deleteTicket: (TicketEntity) -> Unit,
+    goBack: () -> Unit
 ){
     Scaffold(
         floatingActionButton = {
@@ -164,6 +167,17 @@ fun TicketListBodyScreen(
                 .fillMaxWidth()
                 .padding(padding)
         ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                IconButton(
+                    onClick = goBack,
+                    modifier = Modifier.align(Alignment.CenterVertically)
+                ) {
+                    Icon(Icons.Default.ArrowBack, contentDescription = "volver")
+                }
+            }
             Spacer(modifier = Modifier.height(32.dp))
             Text("Lista de tickets")
             LazyColumn(modifier = Modifier.fillMaxWidth()) {

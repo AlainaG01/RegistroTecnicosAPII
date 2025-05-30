@@ -9,6 +9,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -35,7 +36,8 @@ fun PrioridadListScreen(
     viewModel: PrioridadesViewModel = hiltViewModel(),
     goToPrioridad: (Int) -> Unit,
     createPrioridad: () -> Unit,
-    deletePrioridad: ((PrioridadEntity) -> Unit)? = null
+    deletePrioridad: ((PrioridadEntity) -> Unit)? = null,
+    goBack: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     PrioridadListBodyScreen(
@@ -45,7 +47,8 @@ fun PrioridadListScreen(
         deletePrioridad = { prioridad ->
             viewModel.onEvent(PrioridadEvent.PrioridadChange(prioridad.prioridadId ?: 0))
             viewModel.onEvent(PrioridadEvent.Delete)
-        }
+        },
+        goBack = goBack
     )
 }
 
@@ -86,7 +89,8 @@ fun PrioridadListBodyScreen(
     uiState: PrioridadUiState,
     goToPrioridad: (Int) -> Unit,
     createPrioridad: () -> Unit,
-    deletePrioridad: (PrioridadEntity) -> Unit
+    deletePrioridad: (PrioridadEntity) -> Unit,
+    goBack: () -> Unit
 ){
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -106,6 +110,17 @@ fun PrioridadListBodyScreen(
                 .fillMaxWidth()
                 .padding(padding)
         ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                IconButton(
+                    onClick = goBack,
+                    modifier = Modifier.align(Alignment.CenterVertically)
+                ) {
+                    Icon(Icons.Default.ArrowBack, contentDescription = "volver")
+                }
+            }
             LazyColumn(modifier = Modifier.fillMaxWidth()) {
                 items(uiState.prioridades){ prioridad ->
                     PrioridadRow(

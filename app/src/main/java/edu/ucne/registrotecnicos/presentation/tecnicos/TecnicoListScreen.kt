@@ -9,6 +9,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -35,7 +36,8 @@ fun TecnicoListScreen(
     viewModel: TecnicosViewModel = hiltViewModel(),
     goToTecnico: (Int) -> Unit,
     createTecnico: () -> Unit,
-    deleteTecnico: ((TecnicoEntity) -> Unit)? = null
+    deleteTecnico: ((TecnicoEntity) -> Unit)? = null,
+    goBack: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     TecnicoListBodyScreen(
@@ -45,7 +47,8 @@ fun TecnicoListScreen(
         deleteTecnico = { tecnico ->
             viewModel.onEvent(TecnicoEvent.TecnicoChange(tecnico.tecnicoId ?: 0))
             viewModel.onEvent(TecnicoEvent.Delete)
-        }
+        },
+        goBack = goBack
     )
 }
 
@@ -86,7 +89,8 @@ fun TecnicoListBodyScreen(
     uiState: TecnicoUiState,
     goToTecnico: (Int) -> Unit,
     createTecnico: () -> Unit,
-    deleteTecnico: (TecnicoEntity) -> Unit
+    deleteTecnico: (TecnicoEntity) -> Unit,
+    goBack: () -> Unit
 ){
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -111,6 +115,17 @@ fun TecnicoListBodyScreen(
                 .fillMaxWidth()
                 .padding(padding)
         ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                IconButton(
+                    onClick = goBack,
+                    modifier = Modifier.align(Alignment.CenterVertically)
+                ) {
+                    Icon(Icons.Default.ArrowBack, contentDescription = "volver")
+                }
+            }
             LazyColumn(modifier = Modifier.fillMaxWidth()) {
                 items(uiState.tecnicos) { tecnico ->
                     TecnicoRow(

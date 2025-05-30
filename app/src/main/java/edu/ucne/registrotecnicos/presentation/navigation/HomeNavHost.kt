@@ -36,7 +36,8 @@ fun HomeNavHost(
                 },
                 createPrioridad = {
                     navHostController.navigate(Screen.Prioridad(0))
-                }
+                },
+                goBack = { navHostController.popBackStack() }
             )
 
         }
@@ -60,7 +61,8 @@ fun HomeNavHost(
                 },
                 createTecnico = {
                     navHostController.navigate((Screen.Tecnico(0)))
-                }
+                },
+                goBack = { navHostController.popBackStack() }
             )
         }
 
@@ -88,7 +90,8 @@ fun HomeNavHost(
                 },
                 createTicket = {
                     navHostController.navigate((Screen.Ticket(0)))
-                }
+                },
+                goBack = { navHostController.popBackStack() }
             )
         }
 
