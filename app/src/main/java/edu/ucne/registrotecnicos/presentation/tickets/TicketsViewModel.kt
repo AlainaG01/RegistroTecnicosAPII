@@ -7,6 +7,7 @@ import edu.ucne.registrotecnicos.data.local.entities.TicketEntity
 import edu.ucne.registrotecnicos.data.repository.PrioridadesRepository
 import edu.ucne.registrotecnicos.data.repository.TecnicosRepository
 import edu.ucne.registrotecnicos.data.repository.TicketsRepository
+import edu.ucne.registrotecnicos.presentation.prioridades.toEntity
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
@@ -38,7 +39,7 @@ class TicketsViewModel @Inject constructor(
             is TicketEvent.FechaChange -> onFechaChange(event.fecha)
             TicketEvent.New -> nuevo()
             is TicketEvent.PrioridadChange -> onPrioridadIdChange(event.prioridadId)
-            TicketEvent.Save -> saveTicket()
+            TicketEvent.Save -> viewModelScope.launch { save() }
             is TicketEvent.TecnicoChange -> onTecnicoIdChange(event.tecnicoId)
             is TicketEvent.TicketChange -> onTicketIdChange(event.ticketId)
         }
@@ -67,19 +68,33 @@ class TicketsViewModel @Inject constructor(
     }
 
     //saveTecnico
-    private fun saveTicket() {
-        viewModelScope.launch {
-            if (_uiState.value.cliente.isNullOrBlank() && _uiState.value.prioridadId > 0
-                && _uiState.value.descripcion.isNullOrBlank()
-                && _uiState.value.asunto.isNullOrBlank()
-                && _uiState.value.tecnicoId > 0){
-                _uiState.update {
-                    it.copy(errorMessage = "Campo vacios")
-                }
+//    private fun saveTicket() {
+//        viewModelScope.launch {
+//            if (_uiState.value.cliente.isNullOrBlank() || _uiState.value.prioridadId <= 0
+//                || _uiState.value.descripcion.isNullOrBlank()
+//                || _uiState.value.asunto.isNullOrBlank()
+//                || _uiState.value.tecnicoId <= 0){
+//                _uiState.update {
+//                    it.copy(errorMessage = "Campo vacio")
+//                }
+//            }
+//            else{
+//                ticketsRepository.save(_uiState.value.toEntity())
+//            }
+//        }
+//    }
+    suspend fun save(): Boolean {
+        return if (_uiState.value.cliente.isNullOrBlank() || _uiState.value.prioridadId <= 0
+                    || _uiState.value.descripcion.isNullOrBlank()
+                    || _uiState.value.asunto.isNullOrBlank()
+                    || _uiState.value.tecnicoId <= 0) {
+            _uiState.update {
+                it.copy(errorMessage = "Campos vacíos o inválidos")
             }
-            else{
-                ticketsRepository.save(_uiState.value.toEntity())
-            }
+            false
+        } else {
+            ticketsRepository.save(_uiState.value.toEntity())
+            true
         }
     }
 

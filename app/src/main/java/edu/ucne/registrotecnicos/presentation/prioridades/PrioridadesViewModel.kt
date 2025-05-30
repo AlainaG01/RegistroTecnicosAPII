@@ -27,7 +27,7 @@ data class PrioridadesViewModel @Inject constructor(
             is PrioridadEvent.DescripcionChange -> onDescripcionChange(event.descripcion)
             PrioridadEvent.New -> nuevo()
             is PrioridadEvent.PrioridadChange -> onPrioridadIdChange(event.prioridadId)
-            PrioridadEvent.Save -> save()
+            PrioridadEvent.Save -> viewModelScope.launch { save() }
             is PrioridadEvent.TiempoChange -> onTiempoChange(event.tiempo.toString())
         }
     }
@@ -36,19 +36,18 @@ data class PrioridadesViewModel @Inject constructor(
         getPrioridad()
     }
 
-    //savePrioridad
-    private fun save() {
-        viewModelScope.launch {
-            if (_uiState.value.descripcion.isNullOrBlank() && _uiState.value.tiempo > 0){
-                _uiState.update {
-                    it.copy(errorMessage = "Campo vacios")
-                }
+    suspend fun save(): Boolean {
+        return if (_uiState.value.descripcion.isNullOrBlank() || _uiState.value.tiempo <= 0) {
+            _uiState.update {
+                it.copy(errorMessage = "Campos vacíos o inválidos")
             }
-            else{
-                prioridadesRepository.save(_uiState.value.toEntity())
-            }
+            false
+        } else {
+            prioridadesRepository.save(_uiState.value.toEntity())
+            true
         }
     }
+
 
     private fun nuevo(){
         _uiState.update {
@@ -110,24 +109,6 @@ data class PrioridadesViewModel @Inject constructor(
     private fun onPrioridadIdChange(prioridadId: Int) {
         _uiState.update {
             it.copy(prioridadId = prioridadId)
-        }
-    }
-
-    //funciones a eliminar
-
-    fun savePrioridad(prioridad: PrioridadEntity){
-        viewModelScope.launch {
-            prioridadesRepository.save(prioridad)
-        }
-    }
-
-    suspend fun findPrioridad(id: Int): PrioridadEntity? {
-        return prioridadesRepository.find(id)
-    }
-
-    fun deletePrioridad(prioridad: PrioridadEntity){
-        viewModelScope.launch {
-            prioridadesRepository.delete(prioridad)
         }
     }
 

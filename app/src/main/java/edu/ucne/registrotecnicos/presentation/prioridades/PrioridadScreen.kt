@@ -34,6 +34,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import kotlinx.coroutines.launch
 
 
 @Composable
@@ -55,7 +56,8 @@ fun PrioridadScreen(
     PrioridadBodyScreen(
         uiState = uiState,
         viewModel::onEvent,
-        goBack = goBack
+        goBack = goBack,
+        viewModel = viewModel
     )
 }
 
@@ -64,7 +66,8 @@ fun PrioridadScreen(
 fun PrioridadBodyScreen(
     uiState: PrioridadUiState,
     onEvent: (PrioridadEvent) -> Unit,
-    goBack: () -> Unit
+    goBack: () -> Unit,
+    viewModel: PrioridadesViewModel
 ){
     Scaffold { innerPadding ->
         Column (
@@ -146,8 +149,12 @@ fun PrioridadBodyScreen(
                         val scope = rememberCoroutineScope()
                         OutlinedButton(
                             onClick = {
-                                onEvent(PrioridadEvent.Save)
-                                goBack()
+                                scope.launch {
+                                    val result = viewModel.save()
+                                    if (result) {
+                                        goBack()
+                                    }
+                                }
                             },
                             colors = ButtonDefaults.outlinedButtonColors(
                                 contentColor = Color.Blue

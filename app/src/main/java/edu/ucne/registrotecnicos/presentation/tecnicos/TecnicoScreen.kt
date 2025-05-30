@@ -26,12 +26,14 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import kotlinx.coroutines.launch
 
 @Composable
 fun TecnicoScreen(
@@ -53,7 +55,8 @@ fun TecnicoScreen(
     TecnicoBodyScreen(
         uiState = uiState,
         viewModel::onEvent,
-        goBack = goBack
+        goBack = goBack,
+        viewModel = viewModel
     )
 }
 
@@ -62,7 +65,8 @@ fun TecnicoScreen(
 fun TecnicoBodyScreen(
     uiState: TecnicoUiState,
     onEvent: (TecnicoEvent) -> Unit,
-    goBack: () -> Unit
+    goBack: () -> Unit,
+    viewModel: TecnicosViewModel
 ){
     Scaffold { innerPadding ->
         Column(
@@ -151,10 +155,17 @@ fun TecnicoBodyScreen(
                             )
                             Text("Nuevo")
                         }
+
+                        val scope = rememberCoroutineScope()
+
                         OutlinedButton(
                             onClick = {
-                                onEvent(TecnicoEvent.Save)
-                                goBack()
+                                scope.launch {
+                                    val result = viewModel.save()
+                                    if (result) {
+                                        goBack()
+                                    }
+                                }
                             },
                             colors = ButtonDefaults.outlinedButtonColors(
                                 contentColor = Color.Blue

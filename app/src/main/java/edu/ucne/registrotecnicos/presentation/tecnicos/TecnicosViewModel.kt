@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import edu.ucne.registrotecnicos.data.local.entities.TecnicoEntity
 import edu.ucne.registrotecnicos.data.repository.TecnicosRepository
+import edu.ucne.registrotecnicos.presentation.prioridades.toEntity
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -24,7 +25,7 @@ class TecnicosViewModel @Inject constructor(
             TecnicoEvent.Delete -> delete()
             TecnicoEvent.New -> nuevo()
             is TecnicoEvent.NombreChange -> onNombreChange(event.nombre)
-            TecnicoEvent.Save -> save()
+            TecnicoEvent.Save -> viewModelScope.launch { save() }
             is TecnicoEvent.SueldoChange -> onSueldoChange(event.sueldo)
             is TecnicoEvent.TecnicoChange -> onTecnicoIdChange(event.tecnicoId)
         }
@@ -35,19 +36,18 @@ class TecnicosViewModel @Inject constructor(
         getTecnico()
     }
 
-    //saveTecnico
-     private fun save() {
-        viewModelScope.launch {
-            if (_uiState.value.nombre.isNullOrBlank() || _uiState.value.sueldo < 0.0){
-                _uiState.update {
-                    it.copy(errorMessage = "Campo vacios")
-                }
+    suspend fun save(): Boolean {
+        return if (_uiState.value.nombre.isNullOrBlank() || _uiState.value.sueldo <= 0.0) {
+            _uiState.update {
+                it.copy(errorMessage = "Campos vacíos o inválidos")
             }
-            else{
-                tecnicosRepository.save(_uiState.value.toEntity())
-            }
+            false
+        } else {
+            tecnicosRepository.save(_uiState.value.toEntity())
+            true
         }
     }
+
 
     private fun nuevo(){
         _uiState.update {

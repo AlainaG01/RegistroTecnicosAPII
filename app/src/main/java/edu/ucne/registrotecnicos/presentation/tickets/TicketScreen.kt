@@ -32,6 +32,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -40,6 +41,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import kotlinx.coroutines.launch
 
 
 @Composable
@@ -61,7 +63,8 @@ fun TicketScreen(
     TicketBodyScreen(
         uiState = uiState,
         viewModel::onEvent,
-        goBack = goBack
+        goBack = goBack,
+        viewModel = viewModel
     )
 }
 
@@ -70,7 +73,8 @@ fun TicketScreen(
 fun TicketBodyScreen(
     uiState: TicketUiState,
     onEvent: (TicketEvent) -> Unit,
-    goBack: () -> Unit
+    goBack: () -> Unit,
+    viewModel: TicketsViewModel
 ){
     var expandedPrioridad by remember { mutableStateOf(false) }
     var expandedTecnico by remember { mutableStateOf(false) }
@@ -243,10 +247,15 @@ fun TicketBodyScreen(
                             )
                             Text("Nuevo")
                         }
+                        val scope = rememberCoroutineScope()
                         OutlinedButton(
                             onClick = {
-                                onEvent(TicketEvent.Save)
-                                goBack()
+                                scope.launch {
+                                    val result = viewModel.save()
+                                    if (result) {
+                                        goBack()
+                                    }
+                                }
                             },
                             colors = ButtonDefaults.outlinedButtonColors(
                                 contentColor = Color.Blue

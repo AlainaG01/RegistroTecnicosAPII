@@ -3,6 +3,7 @@ package edu.ucne.registrotecnicos.presentation.mensajes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -151,6 +152,11 @@ fun MensajeBodyScreen(
                     .fillMaxWidth()
                     .height(120.dp)
             )
+
+            Spacer(modifier = Modifier.padding(2.dp))
+            uiState.errorMessage?.let {
+                Text(text = it, color = Color.Red)
+            }
 
             // Botón enviar
             Button(

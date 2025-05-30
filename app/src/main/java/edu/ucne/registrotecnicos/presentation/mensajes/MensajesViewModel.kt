@@ -49,9 +49,9 @@ class MensajesViewModel @Inject constructor(
     // save
     private fun enviarMensaje() {
         viewModelScope.launch {
-            if (_uiState.value.contenido.isNullOrBlank()){
+            if (_uiState.value.contenido.isNullOrBlank() || _uiState.value.remitente.isNullOrBlank()){
                 _uiState.update {
-                    it.copy(errorMessage = "Campo vacio!!!")
+                    it.copy(errorMessage = "Mensaje vacio!!!")
                 }
             }
             else{
