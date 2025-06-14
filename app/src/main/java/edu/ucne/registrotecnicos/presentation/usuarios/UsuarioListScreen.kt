@@ -27,6 +27,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -74,7 +75,25 @@ fun UsuarioListBodyScreen(
         modifier = Modifier.fillMaxSize(),
         topBar = {
             TopAppBar(
-                title = { Text("API Usuarios") }
+                title = {
+                    Text(
+                        text = " API Usuarios ",
+                        style = MaterialTheme.typography.titleLarge,
+                        color = Color.White
+                    )
+                },
+                navigationIcon = {
+                    IconButton(onClick = goBack) {
+                        Icon(
+                            Icons.Default.ArrowBack,
+                            contentDescription = "Volver",
+                            tint = Color.White
+                        )
+                    }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = Color(0xFF272D4D)
+                )
             )
         },
         floatingActionButton = {
@@ -92,17 +111,7 @@ fun UsuarioListBodyScreen(
             Column(
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    IconButton(
-                        onClick = goBack,
-                        modifier = Modifier.align(Alignment.CenterVertically)
-                    ) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "volver")
-                    }
-                }
+
                 if (uiState.usuarios.isEmpty()) {
                     Box(
                         modifier = Modifier
