@@ -11,5 +11,6 @@ data class UsuarioUiState(
     val isSuccess: Boolean = false,
     val errorNombre: String? = null,
     val errorBalance: String? = null,
+    val successMessage: String? = null,
     val usuarios: List<UsuarioDto> = emptyList()
 )
