@@ -67,7 +67,6 @@ dependencies {
     implementation("androidx.compose.material:material:1.3.1") // Usa la última versión
 
 
-
     //Hilt
     implementation("com.google.dagger:hilt-android:2.51")
     ksp("com.google.dagger:hilt-android-compiler:2.51")
