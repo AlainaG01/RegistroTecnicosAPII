@@ -174,9 +174,9 @@ private fun UsuariosRow(
             color = Color.Black
         )
         Text(modifier = Modifier.weight(2f), text = it.balance.toString(), color = Color.Black)
-        IconButton(onClick = goToUsuario) {
-            Icon(Icons.Default.Edit, contentDescription = "Editar", tint = MaterialTheme.colorScheme.primary)
-        }
+//        IconButton(onClick = goToUsuario) {
+//            Icon(Icons.Default.Edit, contentDescription = "Editar", tint = MaterialTheme.colorScheme.primary)
+//        }
     }
     HorizontalDivider()
 }
