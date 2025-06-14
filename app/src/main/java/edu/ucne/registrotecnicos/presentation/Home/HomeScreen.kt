@@ -128,6 +128,30 @@ fun HomeScreen(
                         color = Color.Black
                     )
                 }
+
+                // Botón 4 - Usuarios
+                OutlinedButton(
+                    onClick = { navController.navigate(Screen.UsuarioList) },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(60.dp)
+                        .border(
+                            width = 2.dp,
+                            color = Color.Blue,
+                            shape = RoundedCornerShape(8.dp)
+                        ),
+                    shape = RoundedCornerShape(8.dp),
+                    colors = ButtonDefaults.outlinedButtonColors(
+                        backgroundColor = Color.Transparent,
+                        contentColor = Color.Black
+                    )
+                ) {
+                    Text(
+                        text = "Registro Usuarios",
+                        fontSize = 18.sp,
+                        color = Color.Black
+                    )
+                }
             }
         }
     }
