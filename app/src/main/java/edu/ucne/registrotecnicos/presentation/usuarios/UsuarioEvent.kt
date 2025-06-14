@@ -10,4 +10,6 @@ sealed interface UsuarioEvent {
     data object Nuevo: UsuarioEvent
     data object LimpiarErrorMessageNombre: UsuarioEvent
     data object LimpiarErrorMessageBalance: UsuarioEvent
+    data class GetUsuario(val id: Int): UsuarioEvent
+    data object ResetSuccessMessage: UsuarioEvent
 }
