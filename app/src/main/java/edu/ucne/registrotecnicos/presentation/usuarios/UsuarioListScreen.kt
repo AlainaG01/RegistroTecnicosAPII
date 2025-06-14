@@ -16,6 +16,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
+import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
@@ -36,7 +37,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import edu.ucne.registrotecnicos.data.remote.dto.UsuarioDto
 
-
 @Composable
 fun UsuarioListScreen(
     viewModel: UsuarioViewModel = hiltViewModel(),
@@ -48,7 +48,7 @@ fun UsuarioListScreen(
 
     UsuarioListBodyScreen(
         uiState = uiState,
-        goToUsuario = {id -> goToUsuario(id)},
+        goToUsuario = { id -> goToUsuario(id) },
         onEvent = viewModel::onEvent,
         createUsuario = createUsuario,
         goBack = goBack
@@ -63,67 +63,85 @@ fun UsuarioListBodyScreen(
     onEvent: (UsuarioEvent) -> Unit,
     createUsuario: () -> Unit,
     goBack: () -> Unit
-){
+) {
     val refreshing = uiState.isLoading
     val pullRefreshState = rememberPullRefreshState(
         refreshing = refreshing,
-        onRefresh = { onEvent(UsuarioEvent.GetUsuarios)}
+        onRefresh = { onEvent(UsuarioEvent.GetUsuarios) }
     )
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         topBar = {
             TopAppBar(
-                title = { Text("API Usuarios") })
+                title = { Text("API Usuarios") }
+            )
         },
         floatingActionButton = {
             FloatingActionButton(onClick = createUsuario) {
                 Icon(Icons.Filled.Add, "Agregar nueva")
             }
         }
-    ){ padding ->
-
-        Column(
+    ) { padding ->
+        Box(
             modifier = Modifier
-                .fillMaxWidth()
+                .fillMaxSize()
+                .pullRefresh(pullRefreshState)
                 .padding(padding)
         ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
+            Column(
+                modifier = Modifier.fillMaxWidth()
             ) {
-                IconButton(
-                    onClick = goBack,
-                    modifier = Modifier.align(Alignment.CenterVertically)
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Icon(Icons.Default.ArrowBack, contentDescription = "volver")
+                    IconButton(
+                        onClick = goBack,
+                        modifier = Modifier.align(Alignment.CenterVertically)
+                    ) {
+                        Icon(Icons.Default.ArrowBack, contentDescription = "volver")
+                    }
                 }
-            }
-            if (uiState.usuarios.isEmpty()){
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(24.dp),
-                    contentAlignment = Alignment.Center
-                ){
-                    Text(
-                        text = "No hay usuarios registrados",
-                        style = MaterialTheme.typography.bodyLarge,
-                        color = Color.Gray
-                    )
-                }
-            }else {
-                LazyColumn(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(8.dp)
-                ) {
-                    items(uiState.usuarios) { usuarios ->
-                        UsuariosRow(
-                            it = usuarios,
-                            goToUsuario = { goToUsuario(usuarios.usuarioId ?: 0)}
+                if (uiState.usuarios.isEmpty()) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(24.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = "No hay usuarios registrados",
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = Color.Gray
                         )
-                        Spacer(modifier = Modifier.height(8.dp))
+                    }
+                } else {
+                    LazyColumn(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(8.dp)
+                    ) {
+                        items(uiState.usuarios) { usuario ->
+                            UsuariosRow(
+                                it = usuario,
+                                goToUsuario = { goToUsuario(usuario.usuarioId ?: 0) }
+                            )
+                            Spacer(modifier = Modifier.height(8.dp))
+                        }
+                    }
+                }
+
+                if (!uiState.errorMessage.isNullOrEmpty()) {
+                    Box(
+                        modifier = Modifier
+                            .align(Alignment.CenterHorizontally)
+                            .padding(16.dp)
+                    ) {
+                        Text(
+                            text = uiState.errorMessage,
+                            style = MaterialTheme.typography.bodyMedium
+                        )
                     }
                 }
             }
@@ -131,21 +149,8 @@ fun UsuarioListBodyScreen(
             PullRefreshIndicator(
                 refreshing = refreshing,
                 state = pullRefreshState,
-                modifier = Modifier.align(Alignment.CenterHorizontally)
+                modifier = Modifier.align(Alignment.TopCenter)
             )
-
-            if (!uiState.errorMessage.isNullOrEmpty()){
-                Box(
-                    modifier = Modifier
-                        .align(Alignment.CenterHorizontally)
-                        .padding(16.dp)
-                ){
-                    Text(
-                        text = uiState.errorMessage,
-                        style = MaterialTheme.typography.bodyMedium
-                    )
-                }
-            }
         }
     }
 }
@@ -172,8 +177,6 @@ private fun UsuariosRow(
         IconButton(onClick = goToUsuario) {
             Icon(Icons.Default.Edit, contentDescription = "Editar", tint = MaterialTheme.colorScheme.primary)
         }
-
     }
     HorizontalDivider()
 }
-
