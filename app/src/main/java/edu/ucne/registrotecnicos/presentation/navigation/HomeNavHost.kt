@@ -13,6 +13,7 @@ import edu.ucne.registrotecnicos.presentation.tecnicos.TecnicoListScreen
 import edu.ucne.registrotecnicos.presentation.tecnicos.TecnicoScreen
 import edu.ucne.registrotecnicos.presentation.tickets.TicketListScreen
 import edu.ucne.registrotecnicos.presentation.tickets.TicketScreen
+import edu.ucne.registrotecnicos.presentation.usuarios.UsuarioListScreen
 
 @Composable
 fun HomeNavHost(
@@ -110,6 +111,19 @@ fun HomeNavHost(
             require(ticketId != null) { "Ticket ID no puede ser null para MensajeScreen" }
             MensajeScreen(
                 ticketId = ticketId,
+                goBack = { navHostController.popBackStack() }
+            )
+        }
+
+        // Pantallas de Listar Usuarios
+        composable<Screen.UsuarioList> {
+            UsuarioListScreen (
+                goToUsuario = { id ->
+                    navHostController.navigate(Screen.Usuario(id))
+                },
+                createUsuario = {
+                    navHostController.navigate(Screen.Usuario(null))
+                },
                 goBack = { navHostController.popBackStack() }
             )
         }
