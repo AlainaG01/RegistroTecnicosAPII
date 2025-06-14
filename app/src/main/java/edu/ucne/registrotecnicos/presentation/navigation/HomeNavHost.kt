@@ -14,6 +14,7 @@ import edu.ucne.registrotecnicos.presentation.tecnicos.TecnicoScreen
 import edu.ucne.registrotecnicos.presentation.tickets.TicketListScreen
 import edu.ucne.registrotecnicos.presentation.tickets.TicketScreen
 import edu.ucne.registrotecnicos.presentation.usuarios.UsuarioListScreen
+import edu.ucne.registrotecnicos.presentation.usuarios.UsuarioScreen
 
 @Composable
 fun HomeNavHost(
@@ -124,6 +125,13 @@ fun HomeNavHost(
                 createUsuario = {
                     navHostController.navigate(Screen.Usuario(null))
                 },
+                goBack = { navHostController.popBackStack() }
+            )
+        }
+
+        //pantalla formulario de usuarios
+        composable <Screen.Usuario>{ backStack ->
+            UsuarioScreen(
                 goBack = { navHostController.popBackStack() }
             )
         }
