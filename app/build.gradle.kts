@@ -4,7 +4,7 @@ plugins {
     id("com.google.devtools.ksp") version "2.0.0-1.0.23"
     id("com.google.dagger.hilt.android")
     id("org.jetbrains.kotlin.plugin.compose")
-    alias(libs.plugins.kotlinx.serialization)
+    alias(libs.plugins.kotlinx.serialization) // Plugin necesario para kotlinx.serialization
 }
 
 android {
@@ -43,11 +43,12 @@ android {
 
 }
 
-
 dependencies {
+    // kotlinx.serialization JSON parser
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0")
+
     //navigation
     implementation(libs.androidx.navigation.compose)
-    implementation(libs.kotlinx.serialization.json)
 
     //room
     implementation("androidx.room:room-runtime:2.6.1")
@@ -57,15 +58,13 @@ dependencies {
     annotationProcessor("androidx.room:room-compiler:2.6.1")
     ksp("androidx.room:room-compiler:2.6.1")
 
-
     implementation("androidx.compose.foundation:foundation:1.5.0")
 
     //optional
     implementation("androidx.room:room-ktx:2.6.1")
     implementation("androidx.compose.material3:material3:1.1.0-alpha02")
-    implementation ("androidx.compose.material:material:1.4.0")
-    implementation("androidx.compose.material:material:1.3.1") // Usa la última versión
-
+    implementation("androidx.compose.material:material:1.4.0")
+    implementation("androidx.compose.material:material:1.3.1")
 
     //Hilt
     implementation("com.google.dagger:hilt-android:2.51")
@@ -74,8 +73,14 @@ dependencies {
 
     //Retrofit
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
-    implementation("com.squareup.moshi:moshi-kotlin:1.14.0")
-    implementation("com.squareup.retrofit2:converter-moshi:2.9.0")
+
+    // Moshi
+    // implementation("com.squareup.moshi:moshi-kotlin:1.14.0")
+    // implementation("com.squareup.retrofit2:converter-moshi:2.9.0")
+
+    // kotlinx.serialization
+    implementation("com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter:0.8.0")
+
     implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
 
     implementation(libs.androidx.core.ktx)
@@ -93,5 +98,4 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
-
 }
