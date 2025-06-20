@@ -4,7 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import edu.ucne.registrotecnicos.data.remote.Resource
-import edu.ucne.registrotecnicos.data.remote.dto.UsuarioDto
+import edu.ucne.registrotecnicos.data.remote.dto.CreateUsuarioDto
+import edu.ucne.registrotecnicos.data.remote.dto.UsuariosDto
 import edu.ucne.registrotecnicos.data.repository.UsuariosRepository
 import edu.ucne.registrotecnicos.presentation.UiEvent
 import kotlinx.coroutines.channels.Channel
@@ -230,8 +231,7 @@ class UsuarioViewModel @Inject constructor(
     }
 }
 
-fun UsuarioUiState.toEntity() = UsuarioDto(
-    usuarioId = usuarioId,
+fun UsuarioUiState.toEntity() = CreateUsuarioDto(
     nombre = nombre ?: "",
     balance = balance ?: 0.0,
 )

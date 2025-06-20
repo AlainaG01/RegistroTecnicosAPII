@@ -1,6 +1,7 @@
 package edu.ucne.registrotecnicos.data.remote
 
-import edu.ucne.registrotecnicos.data.remote.dto.UsuarioDto
+import edu.ucne.registrotecnicos.data.remote.dto.CreateUsuarioDto
+import edu.ucne.registrotecnicos.data.remote.dto.UsuariosDto
 import javax.inject.Inject
 
 class RemoteDataSource @Inject constructor(
@@ -8,9 +9,9 @@ class RemoteDataSource @Inject constructor(
 ){
     suspend fun getUsuarios()= usuarioingApi.getUsuarios()
 
-    suspend fun updateUsuario(usuarioDto: UsuarioDto)= usuarioingApi.updateUsuario(usuarioDto)
+    suspend fun updateUsuario(usuariosDto: UsuariosDto)= usuarioingApi.updateUsuario(usuariosDto)
 
-    suspend fun saveUsuario(usuarioDto: UsuarioDto)= usuarioingApi.saveUsuario(usuarioDto)
+    suspend fun saveUsuario(usuariosDto: CreateUsuarioDto)= usuarioingApi.saveUsuario(usuariosDto)
 
     suspend fun deleteUsuario(id: Int)= usuarioingApi.deleteUsuario(id)
 

@@ -14,7 +14,6 @@ import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
@@ -36,7 +35,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import edu.ucne.registrotecnicos.data.remote.dto.UsuarioDto
+import edu.ucne.registrotecnicos.data.remote.dto.UsuariosDto
 
 @Composable
 fun UsuarioListScreen(
@@ -166,7 +165,7 @@ fun UsuarioListBodyScreen(
 
 @Composable
 private fun UsuariosRow(
-    it: UsuarioDto,
+    it: UsuariosDto,
     goToUsuario: () -> Unit
 ) {
     Row(

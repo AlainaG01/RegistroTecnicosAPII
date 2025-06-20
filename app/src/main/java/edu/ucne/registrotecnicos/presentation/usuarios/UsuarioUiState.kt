@@ -1,6 +1,6 @@
 package edu.ucne.registrotecnicos.presentation.usuarios
 
-import edu.ucne.registrotecnicos.data.remote.dto.UsuarioDto
+import edu.ucne.registrotecnicos.data.remote.dto.UsuariosDto
 
 data class UsuarioUiState(
     val usuarioId: Int? = null,
@@ -12,5 +12,5 @@ data class UsuarioUiState(
     val errorNombre: String? = null,
     val errorBalance: String? = null,
     val successMessage: String? = null,
-    val usuarios: List<UsuarioDto> = emptyList()
+    val usuarios: List<UsuariosDto> = emptyList()
 )
