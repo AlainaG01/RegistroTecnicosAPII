@@ -2,8 +2,16 @@ package edu.ucne.registrotecnicos.data.remote.dto
 
 import kotlinx.serialization.Serializable
 
+// Para creación (sin usuarioId)
 @Serializable
-data class UsuarioDto(
+data class CreateUsuarioDto(
+    val nombre: String,
+    val balance: Double
+)
+
+// Para respuestas y actualizaciones (con usuarioId)
+@Serializable
+data class UsuariosDto(
     val usuarioId: Int?,
     val nombre: String,
     val balance: Double
