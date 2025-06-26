@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">RegistroTecnicos</string>
+    <string name="ticket_screen_tittle">Registro de tickets</string>
 </resources>
