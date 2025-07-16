@@ -145,17 +145,17 @@ class UsuarioViewModel @Inject constructor(
                             errorMessage = null
                         )
                     }
-            } else {
-                _uiState.update {
-                    it.copy(
-                        errorMessage = "Error en la API: ${e.code()} - ${e.message}",
-                        isSuccess = false
-                    )
-                }
-                return@launch // Salir si es otro error de API
+                } else {
+                    _uiState.update {
+                        it.copy(
+                            errorMessage = "Error en la API: ${e.code()} - ${e.message}",
+                            isSuccess = false
+                        )
+                    }
+                    return@launch // Salir si es otro error de API
 
-            }
-        }catch (e: Exception){
+                }
+            }catch (e: Exception){
                 _uiState.update {
                     it.copy(
                         errorMessage = "Error al guardar el usuario: ${e.localizedMessage}",
