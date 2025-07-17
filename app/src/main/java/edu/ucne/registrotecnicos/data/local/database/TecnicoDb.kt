@@ -8,10 +8,12 @@ import edu.ucne.registrotecnicos.data.local.dao.MensajeDao
 import edu.ucne.registrotecnicos.data.local.dao.PrioridadDao
 import edu.ucne.registrotecnicos.data.local.dao.TecnicoDao
 import edu.ucne.registrotecnicos.data.local.dao.TicketDao
+import edu.ucne.registrotecnicos.data.local.dao.UsuarioDao
 import edu.ucne.registrotecnicos.data.local.entities.MensajeEntity
 import edu.ucne.registrotecnicos.data.local.entities.PrioridadEntity
 import edu.ucne.registrotecnicos.data.local.entities.TecnicoEntity
 import edu.ucne.registrotecnicos.data.local.entities.TicketEntity
+import edu.ucne.registrotecnicos.data.local.entities.UsuarioEntity
 import java.util.Date
 
 class Converters {
@@ -31,9 +33,10 @@ class Converters {
         TecnicoEntity::class,
         PrioridadEntity::class,
         TicketEntity::class,
-        MensajeEntity::class
+        MensajeEntity::class,
+        UsuarioEntity::class
     ],
-    version = 4,
+    version = 5,
     exportSchema = false
 )
 @TypeConverters(Converters::class)
@@ -42,4 +45,5 @@ abstract class TecnicoDb : RoomDatabase() {
     abstract fun PrioridadDao(): PrioridadDao
     abstract fun TicketDao(): TicketDao
     abstract fun MensajeDao(): MensajeDao
+    abstract fun UsuarioDao(): UsuarioDao
 }
