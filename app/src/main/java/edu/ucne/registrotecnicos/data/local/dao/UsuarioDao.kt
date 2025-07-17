@@ -23,5 +23,5 @@ interface UsuarioDao {
     @Delete
     suspend fun delete(usuario: UsuarioEntity)
     @Query("SELECT * FROM Usuarios")
-    fun getAll(): Flow<List<UsuarioEntity>>
+    suspend fun getAll(): List<UsuarioEntity>
 }
