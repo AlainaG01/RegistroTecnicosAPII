@@ -15,6 +15,8 @@ import edu.ucne.registrotecnicos.presentation.tickets.TicketListScreen
 import edu.ucne.registrotecnicos.presentation.tickets.TicketScreen
 import edu.ucne.registrotecnicos.presentation.usuarios.UsuarioListScreen
 import edu.ucne.registrotecnicos.presentation.usuarios.UsuarioScreen
+import edu.ucne.registrotecnicos.presentation.vehiculo.VehiculoListScreen
+import edu.ucne.registrotecnicos.presentation.vehiculo.VehiculoScreen
 
 @Composable
 fun HomeNavHost(
@@ -132,6 +134,26 @@ fun HomeNavHost(
         //pantalla formulario de usuarios
         composable <Screen.Usuario>{ backStack ->
             UsuarioScreen(
+                goBack = { navHostController.popBackStack() }
+            )
+        }
+
+        // Pantallas de Listar Vehiculos
+        composable<Screen.VehiculoList> {
+            VehiculoListScreen (
+                goToVehiculo = { id ->
+                    navHostController.navigate(Screen.Vehiculo(id))
+                },
+                createVehiculo = {
+                    navHostController.navigate(Screen.Vehiculo(null))
+                },
+                goBack = { navHostController.popBackStack() }
+            )
+        }
+
+        //pantalla formulario de usuarios
+        composable <Screen.Vehiculo>{ backStack ->
+            VehiculoScreen (
                 goBack = { navHostController.popBackStack() }
             )
         }
