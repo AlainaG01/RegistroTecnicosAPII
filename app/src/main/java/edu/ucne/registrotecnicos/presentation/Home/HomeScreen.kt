@@ -1,5 +1,8 @@
 package edu.ucne.registrotecnicos.presentation.Home
 
+import android.Manifest
+import android.content.Context
+import android.os.Build
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -12,8 +15,10 @@ import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedButton
 import androidx.compose.material.Surface
-import androidx.compose.material.Text
+import androidx.compose.material3.Button
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -23,12 +28,48 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.isGranted
+import com.google.accompanist.permissions.rememberPermissionState
+import edu.ucne.registrotecnicos.common.NotificationHandler
 import edu.ucne.registrotecnicos.presentation.navigation.Screen
 
+@OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun HomeScreen(
-    navController: NavController
+    navController: NavController,
+    context: Context
 ) {
+    //notificaciones
+    // Solo necesitamos pedir permiso en Android 13 (TIRAMISU) o superior
+    val postNotificationPermission = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        rememberPermissionState(permission = Manifest.permission.POST_NOTIFICATIONS)
+    } else {
+        // En versiones anteriores, el permiso se concede implícitamente
+        null
+    }
+
+    val notificationHandler = NotificationHandler(context)
+
+    // Solicita el permiso cuando la pantalla se carga por primera vez
+    LaunchedEffect(key1 = true) {
+        if (postNotificationPermission != null &&
+            !postNotificationPermission.status.isGranted) {
+            postNotificationPermission.launchPermissionRequest()
+        }
+    }
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Button(onClick = {
+            notificationHandler.showSimpleNotification()
+        }) {
+            Text(text = "Mostrar Notificación")
+        }
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()

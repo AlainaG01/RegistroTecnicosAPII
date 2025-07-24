@@ -35,15 +35,10 @@ class MainActivity : ComponentActivity() {
             RegistroTecnicosTheme {
                 val nav = rememberNavController()
 
-                Scaffold(
-                    modifier = Modifier.fillMaxSize()
-                ) { paddingValues ->
-                    Box(modifier = Modifier.padding(paddingValues)) {
-                        HomeNavHost(
-                            navHostController = nav
-                        )
-                    }
-                }
+                HomeNavHost(
+                    navHostController = nav,
+                    context = this
+                )
             }
         }
     }
